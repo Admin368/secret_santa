@@ -17,7 +17,7 @@ export default function revelio() {
         }
 
         useEffect(() => {
-            const timer = setInterval(changeText, 6000);
+            const timer = setInterval(changeText, 4000);
             return () => clearInterval(timer);
         }, []);
 
