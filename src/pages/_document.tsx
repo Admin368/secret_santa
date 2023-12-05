@@ -9,7 +9,7 @@ class Document extends NextDocument {
           <meta charSet="UTF-8" />
           <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         </Head>
-        <body className=" flex min-h-screen flex-col items-center justify-center bg-green-700">
+        <body className=" flex min-h-screen flex-col items-center justify-center bg-purple-700">
           <div
             style={{
               border: `1px solid white`,
