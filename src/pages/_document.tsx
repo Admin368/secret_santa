@@ -17,9 +17,15 @@ class Document extends NextDocument {
               minWidth: 320,
               width: "100%",
               height: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "flex-start",
+              flex: 1,
+              flexDirection: "column",
+              padding: 20,
             }}
           >
-            <p className="text-center text-9xl font-extrabold text-white">
+            <p className="text-center text-4xl font-extrabold text-white">
               SECRET SANTA
             </p>
             <Main />
