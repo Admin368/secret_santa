@@ -1,10 +1,6 @@
-import { z } from "zod";
+// import { z } from "zod";
 
-import {
-  createTRPCRouter,
-  protectedProcedure,
-  publicProcedure,
-} from "~/server/api/trpc";
+import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 export const groupRouter = createTRPCRouter({
   test: publicProcedure.query(() => {
@@ -12,7 +8,7 @@ export const groupRouter = createTRPCRouter({
       greeting: `Hello`,
     };
   }),
-  create: publicProcedure.query(({ ctx }) => {
+  create: publicProcedure.mutation(async ({ ctx }) => {
     return ctx.db.group.create({
       data: {
         password: String(Math.floor(Math.random() * 501)),

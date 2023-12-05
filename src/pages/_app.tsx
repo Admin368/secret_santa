@@ -1,8 +1,10 @@
 import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 import { type AppType } from "next/app";
+import ConfigProvider from "antd/lib/config-provider";
 
 import { api } from "~/utils/api";
+import theme from "~/theme/themeConfig";
 
 import "~/styles/globals.css";
 import { useEffect } from "react";
@@ -13,6 +15,7 @@ import {
   stateColor,
   stateColors,
 } from "~/states";
+import { ToastContainer } from "react-toastify";
 
 function ColorChanger() {
   const color = useRecoilValue(stateColor);
@@ -49,8 +52,22 @@ const MyApp: AppType<{ session: Session | null }> = ({
   return (
     <RecoilRoot>
       <SessionProvider session={session}>
+        <ToastContainer
+          position="top-center"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
         <ColorChanger />
-        <Component {...pageProps} />
+        <ConfigProvider theme={theme}>
+          <Component {...pageProps} />
+        </ConfigProvider>
       </SessionProvider>
     </RecoilRoot>
   );
