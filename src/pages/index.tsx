@@ -16,18 +16,18 @@ export default function Home() {
       </Head>
       <main className=" flex min-h-screen flex-col items-center justify-center bg-green-700">
         <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-          <p className="text-white text-9xl font-extrabold">SECRET SANTA</p>
+          <p className="text-9xl font-extrabold text-white">SECRET SANTA</p>
           <p>Welcome Sant</p>
-          <div><button onClick={async () => {
-            await hello.refetch();
-          }} className="bg-transparent border p-36 rounded-full"><p className="text-white font-extrabold text-7xl">OPEN</p></button></div>
-
-          {/* <div className="flex flex-col items-center gap-2">
-            <p className="text-2xl text-white">
-              {hello.data ? hello.data.greeting : "Loading tRPC query..."}
-            </p>
-            <AuthShowcase />
-          </div> */}
+          <div>
+            <button
+              onClick={async () => {
+                await hello.refetch();
+              }}
+              className="rounded-full border bg-transparent p-36"
+            >
+              <p className="text-7xl font-extrabold text-white">OPEN</p>
+            </button>
+          </div>
         </div>
       </main>
     </>
@@ -39,7 +39,7 @@ function AuthShowcase() {
 
   const { data: secretMessage } = api.post.getSecretMessage.useQuery(
     undefined, // no input
-    { enabled: sessionData?.user !== undefined }
+    { enabled: sessionData?.user !== undefined },
   );
 
   return (
