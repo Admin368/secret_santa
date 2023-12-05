@@ -1,8 +1,18 @@
 import { Button } from "~/components/Button";
 import { Text } from "~/components/Text";
 import { useRouter } from "next/router";
+import { api } from "~/utils/api";
 export default function Page() {
   const router = useRouter();
+
+  const groupCreate = api.group.create.useMutation();
+  async function handleGroupCreate() {
+    const res = await groupCreate.mutateAsync();
+    if (res) {
+      console.log(res);
+      await router.push(`/group/link?id=${res.id}`);
+    }
+  }
   return (
     <div
       style={{
@@ -21,12 +31,15 @@ export default function Page() {
       <Text text="List the names of the people participating  and we’ll randomly assign their secret santa." />
       <Text text="And they will receive their secret receiver by emails" />
       <Button
+        isLoading={groupCreate.isLoading}
+        isDisabled={groupCreate.isLoading}
         text="Create Santa List"
         isInverted
         onClick={async () => {
-          await router.push("/make/link");
+          await handleGroupCreate();
         }}
       />
+      {/* <Input /> */}
     </div>
   );
 }
