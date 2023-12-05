@@ -1,14 +1,9 @@
 import { useRouter } from "next/router";
-import Input from "postcss/lib/input";
 import { Button } from "~/components/Button";
 
 export default function match() {
     const router = useRouter();
-    const content = (
-    <div>
-        <p>edit</p>
-        <p>delete</p>
-    </div>);
+    
     return (
         <div className="container text-center text-white flex flex-col justify-start ">
             <div className="text-white text-center">
