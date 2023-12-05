@@ -6,7 +6,7 @@ export const stateColors = atom({
 });
 
 export const stateColorIndex = atom({
-  key: "color", // unique ID (with respect to other atoms/selectors)
+  key: "colorIndex", // unique ID (with respect to other atoms/selectors)
   default: 0, // default value (aka initial value)
 });
 
@@ -19,7 +19,7 @@ export const stateColorsLength = selector({
 });
 
 export const stateColor = selector({
-  key: "colorCalculated", // unique ID (with respect to other atoms/selectors)
+  key: "color", // unique ID (with respect to other atoms/selectors)
   get: ({ get }) => {
     const colorIndex = get(stateColorIndex);
     const colors = get(stateColors);
