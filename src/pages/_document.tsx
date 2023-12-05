@@ -24,6 +24,8 @@ class Document extends NextDocument {
               flex: 1,
               flexDirection: "column",
               padding: 20,
+              // transition: "1s",
+              transition: `background-color 0.5s ease`,
             }}
           >
             <p className="text-center text-4xl font-extrabold text-white">
