@@ -32,7 +32,6 @@ export default function revelio() {
         "The moment of truth has arrived!Are you ready to find out who your Secret Santa is ? ",
         "You have been chosen to be the Secret Santa for",]
 
-    const [revealTextState, setRevealTextState] = useState(revealing);
 
     return (
         <div className=" min-h-screen container text-white text-center flex flex-col justify-center items-center">
