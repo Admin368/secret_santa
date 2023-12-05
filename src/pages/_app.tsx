@@ -5,7 +5,7 @@ import ConfigProvider from "antd/lib/config-provider";
 
 import { api } from "~/utils/api";
 import theme from "~/theme/themeConfig";
-
+import "react-toastify/dist/ReactToastify.css";
 import "~/styles/globals.css";
 import { useEffect } from "react";
 import { RecoilRoot, useRecoilState, useRecoilValue } from "recoil";

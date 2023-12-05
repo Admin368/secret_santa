@@ -3,8 +3,9 @@ import Head from "next/head";
 // import Link from "next/link";
 
 // import { api } from "~/utils/api";
+import PageGroup from "~/pages/group/index";
 
-export default function Home() {
+export function Home() {
   return (
     <>
       <Head>
@@ -17,6 +18,7 @@ export default function Home() {
   );
 }
 
+export default PageGroup;
 // function AuthShowcase() {
 //   const { data: sessionData } = useSession();
 
