@@ -1,0 +1,23 @@
+import { z } from "zod";
+
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "~/server/api/trpc";
+
+export const groupRouter = createTRPCRouter({
+  test: publicProcedure.query(() => {
+    return {
+      greeting: `Hello`,
+    };
+  }),
+  create: publicProcedure.query(({ ctx }) => {
+    return ctx.db.group.create({
+      data: {
+        password: String(Math.floor(Math.random() * 501)),
+        is_matched: false,
+      },
+    });
+  }),
+});
