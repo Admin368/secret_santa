@@ -25,4 +25,23 @@ export const groupRouter = createTRPCRouter({
         },
       });
     }),
+  auth: publicProcedure
+    .input(
+      z.object({
+        id: z.string().min(1),
+        pwd: z.string().min(1),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      let isAuth = false;
+      const group = await ctx.db.group.findUnique({
+        where: {
+          id: input.id,
+        },
+      });
+      if (group?.password === input.pwd) isAuth = true;
+      return {
+        isAuth,
+      };
+    }),
 });

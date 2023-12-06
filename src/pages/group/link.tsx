@@ -5,6 +5,7 @@ import { api } from "~/utils/api";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { toast } from "react-toastify";
 import SpinFC from "antd/lib/spin";
+import CheckAuth from "~/components/CheckAuth";
 
 interface linkType {
   link: string;
@@ -29,6 +30,7 @@ export default function link() {
   }, [group.data]);
   return (
     <div className="container flex flex-col items-center justify-start text-center text-white">
+      <CheckAuth />
       <div className="text-center text-white">
         <p className="py-2.5  text-2xl text-white">Create new link</p>
         <p className="py-2.5 font-light">
