@@ -96,9 +96,13 @@ export default function match() {
           pwd,
         })
         .then(async (res) => {
-          if (res) {
+          if (res === true) {
             toast.success(`Successfully assigned santa`);
-            console.log(res);
+            // console.log(res);
+            await router.push({
+              pathname: "/group/final",
+              query: { id, pwd },
+            });
             await group.refetch();
           }
         })

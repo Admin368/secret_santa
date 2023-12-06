@@ -166,7 +166,8 @@ export const groupRouter = createTRPCRouter({
             }
           }),
         );
-        return assignedMembers;
+        // return assignedMembers;
+        return true;
       } else {
         throw new TRPCClientError("Group or members not found");
       }
