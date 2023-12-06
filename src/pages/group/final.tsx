@@ -4,7 +4,7 @@ import React from 'react'
 export default function final() {
     const router = useRouter();
     return (
-        <div className="container text-center flex flex-col justify-start">
+        <div className="container w-80 text-center flex flex-col justify-start">
             <div className="text-white text-center">
                 <p className="text-white font-bold text-2xl py-2.5">Behold your links</p>
                 <p className="py-2.5 font-light">The Santas have been notified.
@@ -17,16 +17,16 @@ export default function final() {
                             <p>JINGLE</p>
                             <p className="font-light text-xs">jingle@bells.com</p>
                         </div>
-                        <p className="ml-5">...</p>
+                        <p className="ml-10">...</p>
                     </div>
                 </button>
                 <button className="bg-white p-2 ml-2 mr-2 mb-2 mt-2 rounded-lg font-bold">
                     <div className="flex flex-row justify-center ">
                         <div>
                             <p>JINGLE</p>
-                            <p className="font-light text-xs">jingle@bells.com</p>
+                            <p className="font-light text-xs justify-end" >jingle@bells.com</p>
                         </div>
-                        <p className="ml-5">...</p>
+                        <p className="ml-10">...</p>
                     </div>
                 </button>
                  </div>

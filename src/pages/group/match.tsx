@@ -5,12 +5,12 @@ export default function match() {
   const router = useRouter();
 
   return (
-    <div className="container flex flex-col justify-start text-center text-white ">
+    <div className="container w-80 flex flex-col justify-start text-center text-white ">
       <div className="text-center text-white">
         <p className="py-2.5  text-2xl text-white">Create new link</p>
         <p className="py-2.5 font-light">Randomly assign Secret Santas</p>
       </div>
-      <div className="h-75 w-75 flex flex-col rounded-md border text-black">
+      <div className="container w-100 flex flex-col rounded-md border text-black">
         <button className="ml-2 mr-2 mt-2 rounded-lg bg-white p-2 font-bold">
           <div className="flex flex-row justify-center ">
             <div>
@@ -29,7 +29,7 @@ export default function match() {
         <Button
           text="Random Match"
           onClick={async () => {
-            await router.push("/make/final");
+            await router.push("/group/final");
           }}
         />
       </div>
