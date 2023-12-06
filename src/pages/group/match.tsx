@@ -29,12 +29,29 @@ export default function match() {
   const [modalIsOpen, setModalIsOpen] = useState(false);
 
   // functions
-  const modalOpen = useCallback(() => {
-    formAddPerson.resetFields();
-    formAddPerson.setFieldValue("group_id", id);
-    formAddPerson.setFieldValue("pwd", pwd);
-    setModalIsOpen(true);
-  }, [formAddPerson, id, pwd]);
+  const modalOpen = useCallback(
+    (args: { edit_member?: typeof memberType }) => {
+      formAddPerson.resetFields();
+      if (args.edit_member) {
+        formAddPerson.setFieldsValue(args.edit_member);
+        formAddPerson.setFieldValue("is_edit", true);
+      }
+      formAddPerson.setFieldValue("group_id", id);
+      formAddPerson.setFieldValue("pwd", pwd);
+      setModalIsOpen(true);
+    },
+    [formAddPerson, id, pwd],
+  );
+  // const onMemberEdit = useCallback(
+  //   (member: typeof memberType) => {
+  //     // formAddPerson.resetFields();
+  //     formAddPerson.setFieldsValue(member);
+  //     formAddPerson.setFieldValue("group_id", id);
+  //     formAddPerson.setFieldValue("pwd", pwd);
+  //     setModalIsOpen(true);
+  //   },
+  //   [formAddPerson, id, pwd],
+  // );
   const modalOnSubmit = useCallback(() => {
     const values = formAddPerson.getFieldsValue();
     if (values) {
@@ -106,6 +123,12 @@ export default function match() {
               <Input disabled />
             </Form.Item>
             <Form.Item name="pwd" label="Password" hidden>
+              <Input disabled />
+            </Form.Item>
+            <Form.Item name="is_edit" label="isEdit" hidden>
+              <Input disabled />
+            </Form.Item>
+            <Form.Item name="id" label="id" hidden>
               <Input disabled />
             </Form.Item>
             <Form.Item name="name" label="Name" rules={[{ required: true }]}>
@@ -183,6 +206,7 @@ export default function match() {
                         label: "edit",
                         onClick: (id) => {
                           console.log(id);
+                          modalOpen({ edit_member: member });
                         },
                       },
                     ]}
@@ -196,7 +220,7 @@ export default function match() {
             <Button
               text="+ Add Person"
               onClick={() => {
-                modalOpen();
+                modalOpen({});
               }}
             />
           </div>

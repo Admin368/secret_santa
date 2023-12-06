@@ -52,15 +52,30 @@ export const groupRouter = createTRPCRouter({
   member_add: publicProcedure
     .input(z.object({ group_id: z.string().min(1) }))
     .input(z.object({ name: z.string().min(1) }))
-    .input(z.object({ email: z.string().min(1) }))
+    .input(z.object({ email: z.string().email() }))
+    .input(z.object({ is_edit: z.boolean().optional() }))
+    .input(z.object({ id: z.string().min(1).optional() }))
     .mutation(({ ctx, input }) => {
-      return ctx.db.member.create({
-        data: {
-          name: input.name,
-          email: input.email,
-          group_id: input.group_id,
-        },
-      });
+      if (input.is_edit === true && input.id) {
+        return ctx.db.member.update({
+          where: {
+            id: input.id,
+            group_id: input.group_id,
+          },
+          data: {
+            name: input.name,
+            email: input.email,
+          },
+        });
+      } else {
+        return ctx.db.member.create({
+          data: {
+            name: input.name,
+            email: input.email,
+            group_id: input.group_id,
+          },
+        });
+      }
     }),
   member_remove: publicProcedure
     .input(z.object({ group_id: z.string().min(1) }))
