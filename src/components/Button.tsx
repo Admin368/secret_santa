@@ -4,6 +4,7 @@ import { stateColor } from "~/states";
 import AntButton from "antd/lib/button";
 import { MenuOutlined } from "@ant-design/icons";
 import { Menu, Popover } from "antd/lib";
+import { useState } from "react";
 export interface ButtonProps {
   id?: string;
   text: string;
@@ -21,6 +22,7 @@ export interface ButtonProps {
 
 export function Button(props: ButtonProps) {
   const color = useRecoilValue(stateColor);
+  const [menuOpen, setMenuOpen] = useState(false);
   const ButtonMenu = () => {
     return (
       <Menu
@@ -36,6 +38,7 @@ export function Button(props: ButtonProps) {
           if (menuOption && props.id) {
             console.log(menuOption);
             menuOption.onClick({ id: props.id });
+            setMenuOpen(false);
           } else {
             console.log(`Please give your Buttons id props`);
           }
@@ -83,7 +86,14 @@ export function Button(props: ButtonProps) {
         <span>{props.subText}</span>
       </div>
       {props.menuOptions ? (
-        <Popover content={ButtonMenu}>
+        <Popover
+          content={ButtonMenu}
+          trigger={"click"}
+          open={menuOpen}
+          onOpenChange={(state) => {
+            setMenuOpen(state);
+          }}
+        >
           <MenuOutlined />
         </Popover>
       ) : null}

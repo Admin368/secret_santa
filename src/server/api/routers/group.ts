@@ -62,4 +62,19 @@ export const groupRouter = createTRPCRouter({
         },
       });
     }),
+  member_remove: publicProcedure
+    .input(z.object({ group_id: z.string().min(1) }))
+    .input(z.object({ pwd: z.string().min(1) }))
+    .input(z.object({ member_id: z.string().min(1) }))
+    .mutation(({ ctx, input }) => {
+      return ctx.db.member.delete({
+        where: {
+          id: input.member_id,
+          group: {
+            id: input.group_id,
+            password: input.pwd,
+          },
+        },
+      });
+    }),
 });

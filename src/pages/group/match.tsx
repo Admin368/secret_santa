@@ -19,8 +19,10 @@ export default function match() {
     { enabled: id ? true : false && pwd ? true : false, staleTime: Infinity },
   );
   const memberType = group.data?.members[0];
-  // form
   const memberAdd = api.group.member_add.useMutation();
+  const memberRemove = api.group.member_remove.useMutation();
+
+  // form
   const [formAddPerson] = Form.useForm<typeof memberType>();
 
   // states
@@ -50,6 +52,32 @@ export default function match() {
         });
     }
   }, [formAddPerson]);
+
+  const onMemberRemove = useCallback(
+    (args: { id: string }) => {
+      const group_id = id;
+      const member_id = args.id;
+      if (group_id && member_id) {
+        memberRemove
+          .mutateAsync({
+            member_id,
+            group_id,
+            pwd,
+          })
+          .then(async (res) => {
+            if (res) {
+              toast.success(`Successfully removed member`);
+              await group.refetch();
+            }
+          })
+          .catch((e) => {
+            toast.error("Failed to remove user");
+            console.log(e);
+          });
+      }
+    },
+    [id, group, pwd],
+  );
 
   // useEffects
   // useEffect(() => {
@@ -97,7 +125,9 @@ export default function match() {
         className="container flex flex-col justify-start text-center text-white"
         // style={{ width: "100%", border: "1px solid red" }}
       >
-        <Spin spinning={!group.data}>
+        <Spin
+          spinning={!group.data || group.isLoading || memberRemove.isLoading}
+        >
           <div className="text-center text-white">
             <p className="py-2.5  text-2xl text-white">Create new link</p>
             <p className="py-2.5 font-light">Randomly assign Secret Santas</p>
@@ -143,8 +173,9 @@ export default function match() {
                       {
                         key: "delete",
                         label: "delete",
-                        onClick: (id) => {
+                        onClick: ({ id }) => {
                           console.log(id);
+                          onMemberRemove({ id });
                         },
                       },
                       {
