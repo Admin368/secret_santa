@@ -90,6 +90,15 @@ export default function match() {
   const onMembersMakeSantas = useCallback(() => {
     const group_id = id;
     if (group_id && pwd) {
+      if (!group.data?.members) {
+        toast.error(`Please add people first`);
+        return;
+      }
+
+      if (group.data.members?.length <= 2) {
+        toast.error(`Please have atleast 3 people`);
+        return;
+      }
       membersMakeSantas
         .mutateAsync({
           group_id,
@@ -98,7 +107,6 @@ export default function match() {
         .then(async (res) => {
           if (res === true) {
             toast.success(`Successfully assigned santa`);
-            // console.log(res);
             await router.push({
               pathname: "/group/final",
               query: { id, pwd },
@@ -154,10 +162,7 @@ export default function match() {
           </Form>
         </Card>
       </Modal>
-      <div
-        className="container flex flex-col justify-start text-center text-white"
-        // style={{ width: "100%", border: "1px solid red" }}
-      >
+      <div className="container flex flex-col justify-start text-center text-white">
         <Spin
           spinning={
             !group.data ||
@@ -179,7 +184,6 @@ export default function match() {
               padding: 20,
               gap: 5,
               display: "flex",
-              // overflow: "hidden",
             }}
           >
             <div
@@ -191,46 +195,46 @@ export default function match() {
                 justifyContent: "flex-start",
                 width: "100%",
                 height: "50vh",
-                // border: "1px solid white",
                 overflow: "auto",
                 gap: 5,
               }}
             >
-              {group.data?.members.map((member, index) => {
-                return (
-                  <Button
-                    id={member.id}
-                    key={index}
-                    text={member.name}
-                    subText={member.email}
-                    isInverted
-                    onClick={() => {
-                      // modalOpen();
-                    }}
-                    menuOptions={[
-                      {
-                        key: "delete",
-                        label: "delete",
-                        onClick: ({ id }) => {
-                          console.log(id);
-                          onMemberRemove({ id });
+              {group.data?.members && group.data?.members?.length > 0 ? (
+                group.data?.members.map((member, index) => {
+                  return (
+                    <Button
+                      id={member.id}
+                      key={index}
+                      text={member.name}
+                      subText={member.email}
+                      isInverted
+                      onClick={() => {
+                        // modalOpen();
+                      }}
+                      menuOptions={[
+                        {
+                          key: "delete",
+                          label: "delete",
+                          onClick: ({ id }) => {
+                            console.log(id);
+                            onMemberRemove({ id });
+                          },
                         },
-                      },
-                      {
-                        key: "edit",
-                        label: "edit",
-                        onClick: (id) => {
-                          console.log(id);
-                          modalOpen({ edit_member: member });
+                        {
+                          key: "edit",
+                          label: "edit",
+                          onClick: (id) => {
+                            console.log(id);
+                            modalOpen({ edit_member: member });
+                          },
                         },
-                      },
-                    ]}
-                  />
-                );
-              })}
-              {/* <button className="m-2 rounded-lg border bg-transparent p-2 font-bold text-white">
-              <p>+ Add person</p>
-            </button> */}
+                      ]}
+                    />
+                  );
+                })
+              ) : (
+                <span style={{ color: "white" }}>Please add some people</span>
+              )}
             </div>
             <Button
               text="+ Add Person"
@@ -251,7 +255,6 @@ export default function match() {
               text="Continue and Random Match"
               isInverted
               onClick={async () => {
-                // await router.push("/make/final");
                 onMembersMakeSantas();
               }}
             />

@@ -166,6 +166,16 @@ export const groupRouter = createTRPCRouter({
             }
           }),
         );
+
+        // update is matched
+        await ctx.db.group.update({
+          where: {
+            id: input.group_id,
+          },
+          data: {
+            is_matched: true,
+          },
+        });
         // return assignedMembers;
         return true;
       } else {

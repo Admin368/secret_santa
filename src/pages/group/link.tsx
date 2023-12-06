@@ -46,7 +46,14 @@ export default function link() {
           <p className="mt-0 font-light">
             {link?.password ?? `AnnieAreYouOkay`}
           </p>
-          <div className="mt-2">
+          <div
+            className="mt-2"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
             <CopyToClipboard
               text={`Secret Santa Link (Only for link maker) Link: ${link?.link} Password: ${link?.password}`}
               onCopy={() => {
@@ -70,7 +77,7 @@ export default function link() {
       <p className="font-light">
         This is only for the <span className="font-semibold">link maker</span>
       </p>
-      <p>😉</p>
+      <p style={{ fontSize: 32 }}>😉</p>
       <div className="m-2">
         <Button
           isDisabled={group.data ? false : true}
