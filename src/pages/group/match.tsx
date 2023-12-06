@@ -1,7 +1,7 @@
-import { group } from "@prisma/client";
+// import { group } from "@prisma/client";
 import { Card, Form, Input, Modal, Spin } from "antd/lib";
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "react-toastify";
 import { Button } from "~/components/Button";
 import CheckAuth from "~/components/CheckAuth";

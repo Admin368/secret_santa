@@ -2,11 +2,7 @@
 import { useRecoilValue } from "recoil";
 import { stateColor } from "~/states";
 import AntButton from "antd/lib/button";
-import {
-  BarsOutlined,
-  MenuOutlined,
-  SmallDashOutlined,
-} from "@ant-design/icons";
+import { MenuOutlined } from "@ant-design/icons";
 import { Menu, Popover } from "antd/lib";
 export interface ButtonProps {
   id?: string;
@@ -32,7 +28,7 @@ export function Button(props: ButtonProps) {
           key: item.key,
           label: item.label,
         }))}
-        onClick={({ key, keyPath }) => {
+        onClick={({ key }) => {
           console.log(key);
           const menuOption = props.menuOptions?.find(
             (item) => item.key === key,
