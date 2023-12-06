@@ -26,7 +26,7 @@ export default function CheckAuth() {
   }, [form]);
   const auth = api.group.auth.useQuery(
     { id, pwd },
-    { enabled: id && pwd ? true : false },
+    { enabled: id && pwd ? true : false, refetchInterval: 300000 },
   );
   useEffect(() => {
     form.setFieldValue("id", id);

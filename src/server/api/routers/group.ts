@@ -1,6 +1,9 @@
+import { member } from "@prisma/client";
+import { TRPCClientError } from "@trpc/client";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { shuffle1 } from "./util";
 
 export const groupRouter = createTRPCRouter({
   test: publicProcedure.query(() => {
@@ -91,5 +94,81 @@ export const groupRouter = createTRPCRouter({
           },
         },
       });
+    }),
+  members_make_santas: publicProcedure
+    .input(z.object({ group_id: z.string().min(1) }))
+    .input(z.object({ pwd: z.string().min(1) }))
+    .mutation(async ({ ctx, input }) => {
+      const group = await ctx.db.group.findUnique({
+        where: {
+          id: input.group_id,
+        },
+        include: {
+          members: true,
+        },
+      });
+      const members = group?.members;
+      if (group && members) {
+        console.log(`MAKING SANTA'S FOR ${group.id}`);
+        // interface User {
+        //   name: string;
+        //   id: number;
+        // }
+
+        function secretSanta(users: member[]) {
+          const shuffledUsers = shuffle1(users) as unknown as member[];
+          const assignments = [];
+
+          for (let i = 0; i < shuffledUsers.length; i++) {
+            const currentUser = shuffledUsers[i];
+            const nextUser = shuffledUsers[(i + 1) % shuffledUsers.length];
+            if (currentUser && nextUser) {
+              assignments.push({
+                giver: currentUser,
+                receiver: nextUser,
+              });
+            }
+          }
+
+          return assignments;
+        }
+        // const assignedMembers: member[] = [];
+        // const assignments = secretSanta(members);
+        // assignments.map(async ({ giver, receiver }) => {
+        //   const assignedMember = await ctx.db.member.update({
+        //     where: {
+        //       id: giver.id,
+        //     },
+        //     data: {
+        //       receiver_id: receiver.id,
+        //     },
+        //   });
+        //   if (assignedMember) {
+        //     assignedMembers.push(assignedMember);
+        //   }
+        // });
+        // return assignedMembers;
+
+        const assignedMembers: member[] = [];
+        const assignments = secretSanta(members);
+        await Promise.all(
+          assignments.map(async ({ giver, receiver }) => {
+            const assignedMember = await ctx.db.member.update({
+              where: {
+                id: giver.id,
+              },
+              data: {
+                receiver_id: receiver.id,
+              },
+            });
+            if (assignedMember) {
+              assignedMembers.push(assignedMember);
+            }
+          }),
+        );
+        return assignedMembers;
+      } else {
+        throw new TRPCClientError("Group or members not found");
+      }
     }),
 });

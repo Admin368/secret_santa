@@ -21,6 +21,7 @@ export default function match() {
   const memberType = group.data?.members[0];
   const memberAdd = api.group.member_add.useMutation();
   const memberRemove = api.group.member_remove.useMutation();
+  const membersMakeSantas = api.group.members_make_santas.useMutation();
 
   // form
   const [formAddPerson] = Form.useForm<typeof memberType>();
@@ -42,16 +43,6 @@ export default function match() {
     },
     [formAddPerson, id, pwd],
   );
-  // const onMemberEdit = useCallback(
-  //   (member: typeof memberType) => {
-  //     // formAddPerson.resetFields();
-  //     formAddPerson.setFieldsValue(member);
-  //     formAddPerson.setFieldValue("group_id", id);
-  //     formAddPerson.setFieldValue("pwd", pwd);
-  //     setModalIsOpen(true);
-  //   },
-  //   [formAddPerson, id, pwd],
-  // );
   const modalOnSubmit = useCallback(() => {
     const values = formAddPerson.getFieldsValue();
     if (values) {
@@ -96,12 +87,27 @@ export default function match() {
     [id, group, pwd],
   );
 
-  // useEffects
-  // useEffect(() => {
-  //   if (id) {
-  //     formAddPerson.setFieldValue("group_id", "sdsd");
-  //   }
-  // }, [id]);
+  const onMembersMakeSantas = useCallback(() => {
+    const group_id = id;
+    if (group_id && pwd) {
+      membersMakeSantas
+        .mutateAsync({
+          group_id,
+          pwd,
+        })
+        .then(async (res) => {
+          if (res) {
+            toast.success(`Successfully assigned santa`);
+            console.log(res);
+            await group.refetch();
+          }
+        })
+        .catch((e) => {
+          toast.error("Failed to assign santas");
+          console.log(e);
+        });
+    }
+  }, [id, group, pwd]);
   return (
     <>
       <CheckAuth />
@@ -149,7 +155,12 @@ export default function match() {
         // style={{ width: "100%", border: "1px solid red" }}
       >
         <Spin
-          spinning={!group.data || group.isLoading || memberRemove.isLoading}
+          spinning={
+            !group.data ||
+            group.isLoading ||
+            memberRemove.isLoading ||
+            membersMakeSantas.isLoading
+          }
         >
           <div className="text-center text-white">
             <p className="py-2.5  text-2xl text-white">Create new link</p>
@@ -236,7 +247,8 @@ export default function match() {
               text="Continue and Random Match"
               isInverted
               onClick={async () => {
-                await router.push("/make/final");
+                // await router.push("/make/final");
+                onMembersMakeSantas();
               }}
             />
           </div>
