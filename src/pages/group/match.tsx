@@ -24,18 +24,23 @@ export default function match() {
   const membersMakeSantas = api.group.members_make_santas.useMutation();
 
   // form
-  const [formAddPerson] = Form.useForm<typeof memberType>();
+  const [formAddPerson] = Form.useForm<
+    typeof memberType & { is_edit?: boolean }
+  >();
 
   // states
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [modalTitle, setModalTitle] = useState("Add Person");
 
   // functions
   const modalOpen = useCallback(
     (args: { edit_member?: typeof memberType }) => {
       formAddPerson.resetFields();
+      setModalTitle("Add Person");
       if (args.edit_member) {
         formAddPerson.setFieldsValue(args.edit_member);
         formAddPerson.setFieldValue("is_edit", true);
+        setModalTitle("Edit Person");
       }
       formAddPerson.setFieldValue("group_id", id);
       formAddPerson.setFieldValue("pwd", pwd);
@@ -50,7 +55,9 @@ export default function match() {
         .mutateAsync(values)
         .then(async (res) => {
           console.log(res);
-          toast.success(`Successfully added ${res.name}`);
+          toast.success(
+            `Successfully ${values.is_edit ? "edited" : "added"} ${res.name}`,
+          );
           setModalIsOpen(false);
           await group.refetch();
         })
@@ -229,7 +236,7 @@ export default function match() {
                         },
                         {
                           key: "edit",
-                          label: "edit",
+                          label: "Edit",
                           onClick: (id) => {
                             console.log(id);
                             modalOpen({ edit_member: member });

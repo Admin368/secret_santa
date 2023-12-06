@@ -70,6 +70,7 @@ export function Button(props: ButtonProps) {
         display: "flex",
         // flexDirection: "column",
         height: "fit-content",
+        minHeight: 40,
         alignItems: "center",
         justifyContent: "center",
       }}
