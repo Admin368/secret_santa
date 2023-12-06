@@ -131,12 +131,30 @@ export default function match() {
               {group.data?.members.map((member, index) => {
                 return (
                   <Button
+                    id={member.id}
                     key={index}
                     text={member.name}
+                    subText={member.email}
                     isInverted
                     onClick={() => {
-                      modalOpen();
+                      // modalOpen();
                     }}
+                    menuOptions={[
+                      {
+                        key: "delete",
+                        label: "delete",
+                        onClick: (id) => {
+                          console.log(id);
+                        },
+                      },
+                      {
+                        key: "edit",
+                        label: "edit",
+                        onClick: (id) => {
+                          console.log(id);
+                        },
+                      },
+                    ]}
                   />
                 );
               })}
