@@ -4,7 +4,7 @@ import { Button } from "~/components/Button";
 import { api } from "~/utils/api";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { toast } from "react-toastify";
-import SpinFC from "antd/lib/spin";
+import { Spin } from "antd/lib";
 import CheckAuth from "~/components/CheckAuth";
 
 interface linkType {
@@ -39,7 +39,7 @@ export default function link() {
         </p>
       </div>
       <div className="h-50 w-50 flex flex-col items-center rounded-md border p-2">
-        <SpinFC spinning={group.data ? false : true}>
+        <Spin spinning={group.data ? false : true}>
           <p className="mb-0">Link:</p>
           <p className="mt-0 font-light">{link?.link}</p>
           <p className="mb-0">Password:</p>
@@ -65,7 +65,7 @@ export default function link() {
               />
             </CopyToClipboard>
           </div>{" "}
-        </SpinFC>
+        </Spin>
       </div>
       <p className="font-light">
         This is only for the <span className="font-semibold">link maker</span>
@@ -73,9 +73,10 @@ export default function link() {
       <p>😉</p>
       <div className="m-2">
         <Button
+          isDisabled={group.data ? false : true}
           text="Add People"
           onClick={async () => {
-            await router.push("/group/match");
+            await router.push({ pathname: "/group/match", query: { id, pwd } });
           }}
         />
       </div>

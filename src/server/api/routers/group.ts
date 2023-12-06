@@ -25,6 +25,9 @@ export const groupRouter = createTRPCRouter({
           id: input.id,
           password: input.pwd,
         },
+        include: {
+          members: true,
+        },
       });
     }),
   auth: publicProcedure
@@ -45,5 +48,18 @@ export const groupRouter = createTRPCRouter({
       return {
         isAuth,
       };
+    }),
+  member_add: publicProcedure
+    .input(z.object({ group_id: z.string().min(1) }))
+    .input(z.object({ name: z.string().min(1) }))
+    .input(z.object({ email: z.string().min(1) }))
+    .mutation(({ ctx, input }) => {
+      return ctx.db.member.create({
+        data: {
+          name: input.name,
+          email: input.email,
+          group_id: input.group_id,
+        },
+      });
     }),
 });

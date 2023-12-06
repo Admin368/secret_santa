@@ -2,8 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
+body,
+span,
+button {
   -webkit-transition: all 5s;
   -moz-transition: all 5s;
   transition: all 5s;
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+  display: flex;
+}
+::-webkit-scrollbar-thumb {
+  height: 160px;
+  background: white;
+  border-radius: 4.5px;
 }

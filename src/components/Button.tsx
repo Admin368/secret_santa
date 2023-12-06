@@ -4,6 +4,7 @@ import { stateColor } from "~/states";
 import AntButton from "antd/lib/button";
 export interface ButtonProps {
   text: string;
+  subText?: string;
   onClick?: () => void;
   isInverted?: boolean;
   isLoading?: boolean;
@@ -26,10 +27,16 @@ export function Button(props: ButtonProps) {
         backgroundColor: props.isInverted ? "white" : "transparent",
         // border: "1px solid white",
         // borderRadius: 10,
+        display: "flex",
+        flexDirection: "column",
+        height: "fit-content",
+        alignItems: "center",
+        justifyContent: "center",
       }}
     >
       {/* <Input /> */}
-      {props.text}
+      <span>{props.text}</span>
+      <span>{props.subText}</span>
     </AntButton>
   );
 }
