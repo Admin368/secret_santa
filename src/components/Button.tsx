@@ -13,6 +13,7 @@ export interface ButtonProps {
   isInverted?: boolean;
   isLoading?: boolean;
   isDisabled?: boolean;
+  width?: string;
   menuOptions?: {
     key: string;
     label: string;
@@ -59,7 +60,7 @@ export function Button(props: ButtonProps) {
       onClick={props.onClick}
       style={{
         // padding: 10,
-        width: "fit-content",
+        width: props.width ?? "fit-content",
         minWidth: "180px",
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         color: props.isInverted ? color : "white",

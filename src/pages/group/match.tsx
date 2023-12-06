@@ -176,14 +176,18 @@ export default function match() {
             <p className="py-2.5 font-light">Randomly assign Secret Santas</p>
           </div>
           <div
-            className="h-75 w-75 flex flex-col rounded-md border text-black"
+            // className="h-75 w-75 flex flex-col rounded-md border text-black"
             style={{
-              width: "300px",
+              //   width: "300px",
+              width: "100%",
+              borderRadius: 5,
               flex: 1,
               alignItems: "center",
               padding: 20,
               gap: 5,
               display: "flex",
+              flexDirection: "column",
+              border: `1px solid white`,
             }}
           >
             <div
@@ -194,9 +198,11 @@ export default function match() {
                 alignItems: "center",
                 justifyContent: "flex-start",
                 width: "100%",
-                height: "50vh",
+                height: "fit-content",
+                maxHeight: "50vh",
                 overflow: "auto",
                 gap: 5,
+                // border: `1px solid white`,
               }}
             >
               {group.data?.members && group.data?.members?.length > 0 ? (
@@ -208,6 +214,7 @@ export default function match() {
                       text={member.name}
                       subText={member.email}
                       isInverted
+                      width="100%"
                       onClick={() => {
                         // modalOpen();
                       }}
