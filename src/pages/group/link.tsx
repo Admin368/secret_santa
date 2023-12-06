@@ -14,10 +14,11 @@ interface linkType {
 export default function link() {
   // const group = api.group.
   const router = useRouter();
-  const id = router.query.id as unknown as string;
+  const id = router.query.id as string;
+  const pwd = router.query.pwd as string;
   const group = api.group.get.useQuery(
-    { id: id ?? "" },
-    { enabled: id ? true : false, staleTime: Infinity },
+    { id, pwd },
+    { enabled: id ? true : false && pwd ? true : false, staleTime: Infinity },
   );
   const [link, setLink] = useState<linkType>();
   useEffect(() => {

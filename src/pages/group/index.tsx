@@ -10,7 +10,7 @@ export default function Page() {
     const res = await groupCreate.mutateAsync();
     if (res) {
       console.log(res);
-      await router.push(`/group/link?id=${res.id}`);
+      await router.push(`/group/link?id=${res.id}&pwd=${res.password}`);
     }
   }
   return (

@@ -18,10 +18,12 @@ export const groupRouter = createTRPCRouter({
   }),
   get: publicProcedure
     .input(z.object({ id: z.string().min(1) }))
+    .input(z.object({ pwd: z.string().min(1) }))
     .query(({ ctx, input }) => {
       return ctx.db.group.findUnique({
         where: {
           id: input.id,
+          password: input.pwd,
         },
       });
     }),
