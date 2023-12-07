@@ -94,6 +94,7 @@ model member {
   hints       String?
   receiver_id String?
   link        String?
+  link_is_seen Boolean?
   group_id    String
   group       group   @relation(fields: [group_id], references: [id], onDelete: Cascade)
 }

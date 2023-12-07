@@ -113,11 +113,6 @@ export const groupRouter = createTRPCRouter({
       const members = group?.members;
       if (group && members) {
         console.log(`MAKING SANTA'S FOR ${group.id}`);
-        // interface User {
-        //   name: string;
-        //   id: number;
-        // }
-
         function secretSanta(users: member[]) {
           const shuffledUsers = shuffle1(users) as unknown as member[];
           const assignments = [];
@@ -135,23 +130,6 @@ export const groupRouter = createTRPCRouter({
 
           return assignments;
         }
-        // const assignedMembers: member[] = [];
-        // const assignments = secretSanta(members);
-        // assignments.map(async ({ giver, receiver }) => {
-        //   const assignedMember = await ctx.db.member.update({
-        //     where: {
-        //       id: giver.id,
-        //     },
-        //     data: {
-        //       receiver_id: receiver.id,
-        //     },
-        //   });
-        //   if (assignedMember) {
-        //     assignedMembers.push(assignedMember);
-        //   }
-        // });
-        // return assignedMembers;
-
         const assignedMembers: member[] = [];
         const assignments = secretSanta(members);
         await Promise.all(
@@ -162,7 +140,8 @@ export const groupRouter = createTRPCRouter({
               },
               data: {
                 receiver_id: receiver.id,
-                link: `${env.NEXTAUTH_URL}/grinch/${giver.id}`,
+                link: `${env.NEXTAUTH_URL}/grinch?id=${giver.id}`,
+                link_is_seen: false,
               },
             });
             if (assignedMember) {
@@ -185,5 +164,14 @@ export const groupRouter = createTRPCRouter({
       } else {
         throw new TRPCClientError("Group or members not found");
       }
+    }),
+  member_get: publicProcedure
+    .input(z.object({ id: z.string().min(1) }))
+    .query(({ ctx, input }) => {
+      return ctx.db.member.findUnique({
+        where: {
+          id: input.id,
+        },
+      });
     }),
 });
