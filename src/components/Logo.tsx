@@ -12,7 +12,7 @@ export default function Logo() {
       }}
     >
       <p className="text-center text-4xl font-extrabold text-white">
-        SECRET SANTA
+        🎅 SECRET SANTA 🎅
       </p>
     </Button>
   );

@@ -93,13 +93,14 @@ model member {
   email       String
   hints       String?
   receiver_id String?
+  link        String?
   group_id    String
   group       group   @relation(fields: [group_id], references: [id], onDelete: Cascade)
 }
 
 model group {
-  id      String   @id @default(cuid())
-  password String
+  id         String   @id @default(cuid())
+  password   String
   is_matched Boolean
-  members member[]
+  members    member[]
 }

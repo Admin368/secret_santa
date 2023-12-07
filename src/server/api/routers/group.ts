@@ -4,6 +4,9 @@ import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { shuffle1 } from "./util";
+import { env } from "~/env";
+
+const BASE_URL = "https://192.168.1.102:3000";
 
 export const groupRouter = createTRPCRouter({
   test: publicProcedure.query(() => {
@@ -159,6 +162,7 @@ export const groupRouter = createTRPCRouter({
               },
               data: {
                 receiver_id: receiver.id,
+                link: `${env.NEXTAUTH_URL}/grinch/${giver.id}`,
               },
             });
             if (assignedMember) {

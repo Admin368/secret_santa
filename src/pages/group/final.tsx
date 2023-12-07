@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { Button } from "~/components/Button";
 import CheckAuth from "~/components/CheckAuth";
 import { api } from "~/utils/api";
+import { env } from "~/env";
 
 export default function final() {
   // url params
@@ -221,6 +222,23 @@ export default function final() {
                             modalOpen({ edit_member: member });
                           },
                         },
+                        ...(member.link && true
+                          ? [
+                              {
+                                key: "link",
+                                label: "Goto Link",
+                                onClick: () => {
+                                  member.link &&
+                                    // router.replace(
+                                    //   member.link as unknown as URL,
+                                    // );
+                                    window.location.replace(
+                                      member.link as unknown as URL,
+                                    );
+                                },
+                              },
+                            ]
+                          : []),
                       ]}
                     />
                   );
