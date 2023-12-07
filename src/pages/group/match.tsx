@@ -142,7 +142,7 @@ export default function match() {
         }}
         closable={false}
       >
-        <Card title={"Add Person"} loading={memberAdd.isLoading}>
+        <Card title={modalTitle} loading={memberAdd.isLoading}>
           <Form form={formAddPerson} onFinish={modalOnSubmit}>
             <Form.Item name="group_id" label="Group Id" hidden>
               <Input disabled />

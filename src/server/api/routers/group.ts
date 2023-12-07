@@ -1,4 +1,4 @@
-// import { member } from "@prisma/client";
+import type { member } from "@prisma/client";
 import { TRPCClientError } from "@trpc/client";
 import { z } from "zod";
 

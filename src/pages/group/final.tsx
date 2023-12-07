@@ -6,7 +6,6 @@ import { toast } from "react-toastify";
 import { Button } from "~/components/Button";
 import CheckAuth from "~/components/CheckAuth";
 import { api } from "~/utils/api";
-import { env } from "~/env";
 
 export default function final() {
   // url params
