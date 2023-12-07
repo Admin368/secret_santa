@@ -18,7 +18,7 @@ const MyDocument = () => (
           height: "100%",
           display: "flex",
           alignItems: "center",
-          justifyContent: "flex-start",
+          justifyContent: "center",
           flex: 1,
           flexDirection: "column",
           padding: 20,
