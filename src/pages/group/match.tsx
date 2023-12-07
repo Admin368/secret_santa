@@ -1,38 +1,282 @@
+// import { group } from "@prisma/client";
+import { Card, Form, Input, Modal, Spin } from "antd/lib";
 import { useRouter } from "next/router";
+import { useCallback, useState } from "react";
+import { toast } from "react-toastify";
 import { Button } from "~/components/Button";
+import CheckAuth from "~/components/CheckAuth";
+import { api } from "~/utils/api";
 
 export default function match() {
+  // url params
   const router = useRouter();
+  const id = router.query.id as string;
+  const pwd = router.query.pwd as string;
 
+  // requests
+  const group = api.group.get.useQuery(
+    { id, pwd },
+    { enabled: id ? true : false && pwd ? true : false, staleTime: Infinity },
+  );
+  const memberType = group.data?.members[0];
+  const memberAdd = api.group.member_add.useMutation();
+  const memberRemove = api.group.member_remove.useMutation();
+  const membersMakeSantas = api.group.members_make_santas.useMutation();
+
+  // form
+  const [formAddPerson] = Form.useForm<
+    typeof memberType & { is_edit?: boolean }
+  >();
+
+  // states
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [modalTitle, setModalTitle] = useState("Add Person");
+
+  // functions
+  const modalOpen = useCallback(
+    (args: { edit_member?: typeof memberType }) => {
+      formAddPerson.resetFields();
+      setModalTitle("Add Person");
+      if (args.edit_member) {
+        formAddPerson.setFieldsValue(args.edit_member);
+        formAddPerson.setFieldValue("is_edit", true);
+        setModalTitle("Edit Person");
+      }
+      formAddPerson.setFieldValue("group_id", id);
+      formAddPerson.setFieldValue("pwd", pwd);
+      setModalIsOpen(true);
+    },
+    [formAddPerson, id, pwd],
+  );
+  const modalOnSubmit = useCallback(() => {
+    const values = formAddPerson.getFieldsValue();
+    if (values) {
+      memberAdd
+        .mutateAsync(values)
+        .then(async (res) => {
+          console.log(res);
+          toast.success(
+            `Successfully ${values.is_edit ? "edited" : "added"} ${res.name}`,
+          );
+          setModalIsOpen(false);
+          await group.refetch();
+        })
+        .catch((e) => {
+          toast.error("failed to add");
+          console.error(e);
+        });
+    }
+  }, [formAddPerson]);
+
+  const onMemberRemove = useCallback(
+    (args: { id: string }) => {
+      const group_id = id;
+      const member_id = args.id;
+      if (group_id && member_id) {
+        memberRemove
+          .mutateAsync({
+            member_id,
+            group_id,
+            pwd,
+          })
+          .then(async (res) => {
+            if (res) {
+              toast.success(`Successfully removed member`);
+              await group.refetch();
+            }
+          })
+          .catch((e) => {
+            toast.error("Failed to remove user");
+            console.log(e);
+          });
+      }
+    },
+    [id, group, pwd],
+  );
+
+  const onMembersMakeSantas = useCallback(() => {
+    const group_id = id;
+    if (group_id && pwd) {
+      if (!group.data?.members) {
+        toast.error(`Please add people first`);
+        return;
+      }
+
+      if (group.data.members?.length <= 2) {
+        toast.error(`Please have atleast 3 people`);
+        return;
+      }
+      membersMakeSantas
+        .mutateAsync({
+          group_id,
+          pwd,
+        })
+        .then(async (res) => {
+          if (res === true) {
+            toast.success(`Successfully assigned santa`);
+            await router.push({
+              pathname: "/group/final",
+              query: { id, pwd },
+            });
+            await group.refetch();
+          }
+        })
+        .catch((e) => {
+          toast.error("Failed to assign santas");
+          console.log(e);
+        });
+    }
+  }, [id, group, pwd]);
   return (
-    <div className="container w-80 flex flex-col justify-start text-center text-white ">
-      <div className="text-center text-white">
-        <p className="py-2.5  text-2xl text-white">Create new link</p>
-        <p className="py-2.5 font-light">Randomly assign Secret Santas</p>
-      </div>
-      <div className="container w-100 flex flex-col rounded-md border text-black">
-        <button className="ml-2 mr-2 mt-2 rounded-lg bg-white p-2 font-bold">
-          <div className="flex flex-row justify-center ">
-            <div>
-              <p>JINGLE</p>
-              <p className="text-xs font-light">jingle@bells.com</p>
-            </div>
+    <>
+      <CheckAuth />
+      <Modal
+        open={modalIsOpen}
+        centered
+        onCancel={() => {
+          setModalIsOpen(false);
+        }}
+        onOk={() => {
+          // modalOnSubmit();
+          formAddPerson.submit();
+        }}
+        closable={false}
+      >
+        <Card title={"Add Person"} loading={memberAdd.isLoading}>
+          <Form form={formAddPerson} onFinish={modalOnSubmit}>
+            <Form.Item name="group_id" label="Group Id" hidden>
+              <Input disabled />
+            </Form.Item>
+            <Form.Item name="pwd" label="Password" hidden>
+              <Input disabled />
+            </Form.Item>
+            <Form.Item name="is_edit" label="isEdit" hidden>
+              <Input disabled />
+            </Form.Item>
+            <Form.Item name="id" label="id" hidden>
+              <Input disabled />
+            </Form.Item>
+            <Form.Item name="name" label="Name" rules={[{ required: true }]}>
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="email"
+              label="email"
+              rules={[{ required: true, type: "email" }]}
+            >
+              <Input />
+            </Form.Item>
+          </Form>
+        </Card>
+      </Modal>
+      <div className="container flex flex-col justify-start text-center text-white">
+        <Spin
+          spinning={
+            !group.data ||
+            group.isLoading ||
+            memberRemove.isLoading ||
+            membersMakeSantas.isLoading
+          }
+        >
+          <div className="text-center text-white">
+            <p className="py-2.5  text-2xl text-white">
+              Add people to you secret santa group
+            </p>
+            <p className="py-2.5 font-light">Randomly assign Secret Santas</p>
           </div>
-        </button>
-
-        <button className="m-2 rounded-lg border bg-transparent p-2 font-bold text-white">
-          <p>+ Add person</p>
-        </button>
+          <div
+            // className="h-75 w-75 flex flex-col rounded-md border text-black"
+            style={{
+              //   width: "300px",
+              width: "100%",
+              borderRadius: 5,
+              flex: 1,
+              alignItems: "center",
+              padding: 20,
+              gap: 5,
+              display: "flex",
+              flexDirection: "column",
+              border: `1px solid white`,
+            }}
+          >
+            <div
+              style={{
+                // flex: 1,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "flex-start",
+                width: "100%",
+                height: "fit-content",
+                maxHeight: "50vh",
+                overflow: "auto",
+                gap: 5,
+                // border: `1px solid white`,
+              }}
+            >
+              {group.data?.members && group.data?.members?.length > 0 ? (
+                group.data?.members.map((member, index) => {
+                  return (
+                    <Button
+                      id={member.id}
+                      key={index}
+                      text={member.name}
+                      subText={member.email}
+                      isInverted
+                      width="100%"
+                      onClick={() => {
+                        // modalOpen();
+                      }}
+                      menuOptions={[
+                        {
+                          key: "delete",
+                          label: "delete",
+                          onClick: ({ id }) => {
+                            console.log(id);
+                            onMemberRemove({ id });
+                          },
+                        },
+                        {
+                          key: "edit",
+                          label: "Edit",
+                          onClick: (id) => {
+                            console.log(id);
+                            modalOpen({ edit_member: member });
+                          },
+                        },
+                      ]}
+                    />
+                  );
+                })
+              ) : (
+                <span style={{ color: "white" }}>Please add some people</span>
+              )}
+            </div>
+            <Button
+              text="+ Add Person"
+              onClick={() => {
+                modalOpen({});
+              }}
+            />
+          </div>
+          <div
+            className="m-2"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Button
+              text="Continue and Random Match"
+              isInverted
+              onClick={async () => {
+                onMembersMakeSantas();
+              }}
+            />
+          </div>
+        </Spin>
       </div>
-
-      <div className="m-2">
-        <Button
-          text="Random Match"
-          onClick={async () => {
-            await router.push("/group/final");
-          }}
-        />
-      </div>
-    </div>
+    </>
   );
 }

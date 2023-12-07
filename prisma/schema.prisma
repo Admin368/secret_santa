@@ -92,7 +92,7 @@ model member {
   name        String
   email       String
   hints       String?
-  receiver_id String
+  receiver_id String?
   group_id    String
   group       group   @relation(fields: [group_id], references: [id], onDelete: Cascade)
 }
