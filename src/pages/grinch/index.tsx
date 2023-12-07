@@ -1,4 +1,4 @@
-import { member } from "@prisma/client";
+import type { member } from "@prisma/client";
 import { useRouter } from "next/router";
 import { Button } from "~/components/Button";
 import { api } from "~/utils/api";

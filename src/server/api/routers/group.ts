@@ -1,4 +1,4 @@
-import { member } from "@prisma/client";
+// import { member } from "@prisma/client";
 import { TRPCClientError } from "@trpc/client";
 import { z } from "zod";
 
@@ -6,7 +6,7 @@ import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { shuffle1 } from "./util";
 import { env } from "~/env";
 
-const BASE_URL = "https://192.168.1.102:3000";
+// const BASE_URL = "https://192.168.1.102:3000";
 
 export const groupRouter = createTRPCRouter({
   test: publicProcedure.query(() => {
@@ -171,6 +171,19 @@ export const groupRouter = createTRPCRouter({
       return ctx.db.member.findUnique({
         where: {
           id: input.id,
+        },
+      });
+    }),
+  member_hints_update: publicProcedure
+    .input(z.object({ id: z.string().min(1) }))
+    .input(z.object({ hints: z.string().min(1) }))
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.member.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          hints: input.hints,
         },
       });
     }),
