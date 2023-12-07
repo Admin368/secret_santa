@@ -33,7 +33,9 @@ export default function link() {
     <div className="container flex flex-col items-center justify-start text-center text-white">
       <CheckAuth />
       <div className="text-center text-white">
-        <p className="py-2.5  text-2xl text-white">Create new link</p>
+        <p className="py-2.5  text-2xl text-white">
+          We created a new santa link
+        </p>
         <p className="py-2.5 font-light">
           Please copy and keep this link to view the details later.
         </p>
@@ -63,7 +65,7 @@ export default function link() {
             >
               <Button
                 isDisabled={link ? false : true}
-                text="Copy Link"
+                text="1.Copy Link"
                 isInverted
                 onClick={async () => {
                   // await router.push("/make/link");
@@ -81,7 +83,8 @@ export default function link() {
       <div className="m-2">
         <Button
           isDisabled={group.data ? false : true}
-          text="Add People"
+          text="> 2.Continue Add People"
+          isInverted
           onClick={async () => {
             await router.push({ pathname: "/group/match", query: { id, pwd } });
           }}

@@ -7,7 +7,7 @@ import { Button } from "~/components/Button";
 import CheckAuth from "~/components/CheckAuth";
 import { api } from "~/utils/api";
 
-export default function match() {
+export default function final() {
   // url params
   const router = useRouter();
   const id = router.query.id as string;
@@ -16,11 +16,16 @@ export default function match() {
   // requests
   const group = api.group.get.useQuery(
     { id, pwd },
-    { enabled: id ? true : false && pwd ? true : false, staleTime: Infinity },
+    {
+      enabled: id ? true : false && pwd ? true : false,
+      // staleTime: Infinity,
+      staleTime: 0,
+      keepPreviousData: false,
+    },
   );
   const memberType = group.data?.members[0];
   const memberAdd = api.group.member_add.useMutation();
-  const memberSendEmail = api.group.member_add.useMutation();
+  // const memberSendEmail = api.group.member_add.useMutation();
   // const memberRemove = api.group.member_remove.useMutation();
   // const membersMakeSantas = api.group.members_make_santas.useMutation();
 
@@ -87,22 +92,23 @@ export default function match() {
 
   // useEffects
   useEffect(() => {
-    const group_ = group.data;
-    if (group_) {
-      if (group_.is_matched !== true) {
-        toast.error("This group is not yet matched");
-        window.setTimeout(() => {
-          void router.push({
-            pathname: "/group/index",
-            query: {
-              id,
-              pwd,
-            },
-          });
-          return true;
-        }, 1000);
-      }
-    }
+    // [] CHECK IF GROUP MATCHED
+    // const group_ = group.data;
+    // if (group_) {
+    //   if (group_.is_matched !== true) {
+    //     toast.error("This group is not yet matched");
+    //     window.setTimeout(() => {
+    //       void router.push({
+    //         pathname: "/group/match",
+    //         query: {
+    //           id,
+    //           pwd,
+    //         },
+    //       });
+    //       return true;
+    //     }, 1000);
+    //   }
+    // }
   }, [group.data, id, pwd]);
   return (
     <>
@@ -225,7 +231,7 @@ export default function match() {
             </div>
           </div>
           <div
-            className="m-2"
+            className="m-10"
             style={{
               display: "flex",
               alignItems: "center",

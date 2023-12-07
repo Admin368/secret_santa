@@ -2,16 +2,22 @@ import { Button } from "~/components/Button";
 import { Text } from "~/components/Text";
 import { useRouter } from "next/router";
 import { api } from "~/utils/api";
+import { toast } from "react-toastify";
 export default function Page() {
   const router = useRouter();
 
   const groupCreate = api.group.create.useMutation();
   async function handleGroupCreate() {
-    const res = await groupCreate.mutateAsync();
-    if (res) {
-      console.log(res);
-      await router.push(`/group/link?id=${res.id}&pwd=${res.password}`);
-    }
+    await groupCreate
+      .mutateAsync()
+      .then(async (res) => {
+        console.log(res);
+        await router.push(`/group/link?id=${res.id}&pwd=${res.password}`);
+      })
+      .catch((e) => {
+        console.log(e);
+        toast.error("Failed to create link");
+      });
   }
   return (
     <div

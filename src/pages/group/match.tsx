@@ -179,7 +179,9 @@ export default function match() {
           }
         >
           <div className="text-center text-white">
-            <p className="py-2.5  text-2xl text-white">Create new link</p>
+            <p className="py-2.5  text-2xl text-white">
+              Add people to you secret santa group
+            </p>
             <p className="py-2.5 font-light">Randomly assign Secret Santas</p>
           </div>
           <div

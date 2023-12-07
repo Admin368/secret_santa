@@ -2,6 +2,7 @@ import React from "react";
 import { createCache, extractStyle, StyleProvider } from "@ant-design/cssinjs";
 import Document, { Head, Html, Main, NextScript } from "next/document";
 import type { DocumentContext } from "next/document";
+import Logo from "~/components/Logo";
 
 const MyDocument = () => (
   <Html lang="en">
@@ -25,9 +26,7 @@ const MyDocument = () => (
           transition: `background-color 0.5s ease`,
         }}
       >
-        <p className="text-center text-4xl font-extrabold text-white">
-          SECRET SANTA
-        </p>
+        <Logo />
         <Main />
       </div>
       <NextScript />
