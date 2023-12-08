@@ -77,6 +77,8 @@ export default function LayoutPage(props: PropsLayoutPage) {
             }}
           >
             Create your own <strong>Secret Santa</strong> list
+            <br />
+            Santa.Maravian.com
           </p>
         ) : null}
       </Link>
