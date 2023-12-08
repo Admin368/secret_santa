@@ -7,6 +7,7 @@ class Document extends NextDocument {
       <Html lang="en">
         <Head>
           <meta charSet="UTF-8" />
+          <title>Secret Santa</title>
           <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         </Head>
         <body className=" flex min-h-screen flex-col items-center justify-center bg-purple-700">

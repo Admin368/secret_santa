@@ -1,8 +1,8 @@
 - vercel analytics {cm:2023-12-08}
-- link creation based on root url
+- link creation based on root url {cm:2023-12-08}
 - revilio link expires after seen
 - snow
-- favicon change
+- favicon change {cm:2023-12-08}
 - revelio api
 - footer create your on secret santa group
 - header onclick to home
