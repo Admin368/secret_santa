@@ -1,6 +1,6 @@
 import { LoadingOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import React from "react";
 import { api } from "~/utils/api";
 
@@ -9,30 +9,71 @@ interface PropsTextDisplay {
 }
 function TextDisplay(props: PropsTextDisplay) {
   const revealing = [
-    "Welcome,You are about to discover the identity of the person you will be gifting this year.",
-    "The moment of truth has arrived!Are you ready to find out who your Secret Santa is ? ",
-    `You have been chosen to be the Secret Santa for`,
-    props.name,
+    <p>
+      Welcome
+      <br />
+      You are about to discover
+      <br />
+      The person you will be gifting this year.
+    </p>,
+    <p>
+      The moment of truth has arrived!
+      <br />
+      Are you ready to find out
+      <br />
+      Whose Secret Santa you are?
+    </p>,
+    // <p>You have been chosen to be the Secret Santa for</p>,
+    <p>
+      You
+      <br />
+      are the
+      <br />
+      Secret Santa for
+      <br />
+      <strong>{props.name}</strong>
+    </p>,
   ];
   const [text, setText] = useState(revealing[0]);
-
+  const [isSeen, setIsSeen] = useState(false);
   let index = 0;
 
-  function changeText(): void {
+  const changeText = useCallback(() => {
     setText(revealing[index]);
 
     index++;
     if (index >= revealing.length) {
-      index = 0;
+      setIsSeen(true);
+      //   index = 0;
     }
-  }
+  }, [isSeen]);
 
+  //   useEffect(() => {
+  //     const timer = !isSeen && setInterval(changeText, 3000);
+  //     return () => clearInterval(timer);
+  //   }, [isSeen]);
   useEffect(() => {
-    const timer = setInterval(changeText, 3000);
-    return () => clearInterval(timer);
-  }, []);
+    let timer: NodeJS.Timeout | false = false;
+    if (!isSeen) {
+      timer = setInterval(changeText, 3000);
+    }
+    return () => {
+      if (timer) {
+        clearInterval(timer);
+      }
+    };
+  }, [isSeen]);
 
-  return <p className=" py-2.5 text-2xl font-bold text-white">{text}</p>;
+  return (
+    <p
+      className=" py-2.5 text-2xl font-bold text-white"
+      style={{
+        transition: "2s",
+      }}
+    >
+      {text}
+    </p>
+  );
 }
 export default function revelio() {
   const router = useRouter();
