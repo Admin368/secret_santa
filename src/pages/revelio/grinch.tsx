@@ -2,51 +2,58 @@ import { LoadingOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 import React from "react";
+import { Button } from "~/components/Button";
+import LayoutPage from "~/layouts/LayoutPage";
 import { api } from "~/utils/api";
 
 interface PropsTextDisplay {
   name: string;
+  santa_name?: string;
+  isAuto?: boolean;
 }
 function TextDisplay(props: PropsTextDisplay) {
   const revealing = [
-    <p>
-      Welcome
+    <span>
+      <strong>Welcome {props.santa_name}</strong>
       <br />
       You are about to discover
       <br />
       The person you will be gifting this year.
-    </p>,
-    <p>
+    </span>,
+    <span>
       The moment of truth has arrived!
       <br />
       Are you ready to find out
       <br />
       Whose Secret Santa you are?
-    </p>,
+    </span>,
     // <p>You have been chosen to be the Secret Santa for</p>,
-    <p>
-      You
+    <span>
+      {`${props.santa_name ?? " You"}`}
       <br />
       are the
       <br />
       Secret Santa for
       <br />
-      <strong>{props.name}</strong>
-    </p>,
+      <strong style={{ fontSize: 32 }}>{props.name}</strong>
+    </span>,
   ];
   const [text, setText] = useState(revealing[0]);
   const [isSeen, setIsSeen] = useState(false);
-  let index = 0;
+  const [index, setIndex] = useState(0);
+  // let index = 0;
 
   const changeText = useCallback(() => {
-    setText(revealing[index]);
-
-    index++;
-    if (index >= revealing.length) {
-      setIsSeen(true);
+    const newIndex = index + 1;
+    // index++;
+    if (newIndex < revealing.length) {
+      setIndex(newIndex);
+      setText(revealing[newIndex]);
+      return;
       //   index = 0;
     }
-  }, [isSeen]);
+    setIsSeen(true);
+  }, [isSeen, index]);
 
   //   useEffect(() => {
   //     const timer = !isSeen && setInterval(changeText, 3000);
@@ -54,24 +61,41 @@ function TextDisplay(props: PropsTextDisplay) {
   //   }, [isSeen]);
   useEffect(() => {
     let timer: NodeJS.Timeout | false = false;
-    if (!isSeen) {
-      timer = setInterval(changeText, 3000);
-    }
-    return () => {
-      if (timer) {
-        clearInterval(timer);
+    if (props.isAuto) {
+      if (!isSeen) {
+        timer = setInterval(changeText, 3000);
       }
-    };
-  }, [isSeen]);
+      return () => {
+        if (timer) {
+          clearInterval(timer);
+        }
+      };
+    }
+  }, [isSeen, props.isAuto, changeText, index, isSeen]);
 
   return (
     <p
       className=" py-2.5 text-2xl font-bold text-white"
       style={{
         transition: "2s",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
       }}
     >
       {text}
+      {props.isAuto ? null : index < revealing.length - 1 ? (
+        <>
+          <br />
+          <Button
+            text={`Continue - ${index} / ${revealing.length - 1}`}
+            onClick={() => {
+              changeText();
+            }}
+          />
+        </>
+      ) : null}
     </p>
   );
 }
@@ -96,12 +120,17 @@ export default function revelio() {
     }
   }, [id, receiver.data, santa.data]);
   return (
-    <div className=" container flex min-h-screen flex-col items-center justify-center text-center text-white">
+    // <div className=" container flex min-h-screen flex-col items-center justify-center text-center text-white">
+    <LayoutPage logoIsTop pageTitle="Revelio - Grinch">
       {receiver.data?.receiver_name ? (
-        <TextDisplay name={receiver.data?.receiver_name} />
+        <TextDisplay
+          name={receiver.data?.receiver_name}
+          santa_name={santa.data?.name}
+          // isAuto
+        />
       ) : (
         <LoadingOutlined />
       )}
-    </div>
+    </LayoutPage>
   );
 }

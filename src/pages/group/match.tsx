@@ -1,13 +1,14 @@
 // import { group } from "@prisma/client";
 import { Card, Form, Input, Modal, Spin } from "antd/lib";
 import { useRouter } from "next/router";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Button } from "~/components/Button";
 import CheckAuth from "~/components/CheckAuth";
+import LayoutPage from "~/layouts/LayoutPage";
 import { api } from "~/utils/api";
 
-export default function match() {
+export default function Match() {
   // url params
   const router = useRouter();
   const id = router.query.id as string;
@@ -94,41 +95,59 @@ export default function match() {
     [id, group, pwd],
   );
 
-  const onMembersMakeSantas = useCallback(() => {
-    const group_id = id;
-    if (group_id && pwd) {
-      if (!group.data?.members) {
-        toast.error(`Please add people first`);
-        return;
-      }
+  const onMembersMakeSantas = useCallback(
+    async (args: { is_rematch?: boolean }) => {
+      const group_id = id;
+      if (group_id && pwd) {
+        if (group.data?.is_matched === true && args.is_rematch !== true) {
+          await router.push({
+            pathname: "/group/final",
+            query: { id, pwd },
+          });
+        }
+        if (!group.data?.members) {
+          toast.error(`Please add people first`);
+          return;
+        }
 
-      if (group.data.members?.length <= 2) {
-        toast.error(`Please have atleast 3 people`);
-        return;
+        if (group.data.members?.length <= 2) {
+          toast.error(`Please have atleast 3 people`);
+          return;
+        }
+        membersMakeSantas
+          .mutateAsync({
+            group_id,
+            pwd,
+            is_rematch: args.is_rematch,
+          })
+          .then(async (res) => {
+            if (res === true) {
+              toast.success(`Successfully assigned santa`);
+              await router.push({
+                pathname: "/group/final",
+                query: { id, pwd },
+              });
+              await group.refetch();
+            }
+          })
+          .catch((e) => {
+            toast.error("Failed to assign santas");
+            console.log(e);
+          });
       }
-      membersMakeSantas
-        .mutateAsync({
-          group_id,
-          pwd,
-        })
-        .then(async (res) => {
-          if (res === true) {
-            toast.success(`Successfully assigned santa`);
-            await router.push({
-              pathname: "/group/final",
-              query: { id, pwd },
-            });
-            await group.refetch();
-          }
-        })
-        .catch((e) => {
-          toast.error("Failed to assign santas");
-          console.log(e);
-        });
+    },
+    [id, group.data, pwd],
+  );
+  useEffect(() => {
+    if (group.data?.is_matched) {
+      void router.push({
+        pathname: "/group/final",
+        query: { id, pwd },
+      });
     }
-  }, [id, group, pwd]);
+  }, [group.data, router]);
   return (
-    <>
+    <LayoutPage>
       <CheckAuth />
       <Modal
         open={modalIsOpen}
@@ -252,12 +271,20 @@ export default function match() {
                 <span style={{ color: "white" }}>Please add some people</span>
               )}
             </div>
-            <Button
-              text="+ Add Person"
-              onClick={() => {
-                modalOpen({});
-              }}
-            />
+            {group.data?.is_matched ? (
+              <>
+                Group is already matched
+                <br />
+                We can't add anymore people
+              </>
+            ) : (
+              <Button
+                text="+ Add Person"
+                onClick={() => {
+                  modalOpen({});
+                }}
+              />
+            )}
           </div>
           <div
             className="m-2"
@@ -268,15 +295,19 @@ export default function match() {
             }}
           >
             <Button
-              text="Continue and Random Match"
+              text={
+                group.data?.is_matched
+                  ? "Group already Matched, Continue"
+                  : "Continue and Random Match"
+              }
               isInverted
               onClick={async () => {
-                onMembersMakeSantas();
+                await onMembersMakeSantas({});
               }}
             />
           </div>
         </Spin>
       </div>
-    </>
+    </LayoutPage>
   );
 }

@@ -82,6 +82,8 @@ export function Button(props: ButtonProps) {
           height: "100%",
           display: "flex",
           flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
         <span style={{ fontWeight: "900" }}>{props.text}</span>

@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-title-in-document-head */
 import React from "react";
 import { createCache, extractStyle, StyleProvider } from "@ant-design/cssinjs";
 import Document, { Head, Html, Main, NextScript } from "next/document";
@@ -8,7 +7,6 @@ import Logo from "~/components/Logo";
 const MyDocument = () => (
   <Html lang="en">
     <Head>
-      <title>Secret Santa</title>
       <link
         rel="apple-touch-icon"
         sizes="180x180"
@@ -31,28 +29,8 @@ const MyDocument = () => (
       <meta name="msapplication-TileColor" content="#da532c" />
       <meta name="theme-color" content="#ffffff"></meta>
     </Head>
-    <body className=" flex min-h-screen flex-col items-center justify-center bg-purple-700">
-      <div
-        className="text-center font-extrabold"
-        style={{
-          border: `1px solid white`,
-          maxWidth: 1200,
-          minWidth: 320,
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          flex: 1,
-          flexDirection: "column",
-          padding: 20,
-          // transition: "1s",
-          transition: `background-color 0.5s ease`,
-        }}
-      >
-        <Logo />
-        <Main />
-      </div>
+    <body className="flex min-h-screen flex-col items-stretch justify-stretch bg-purple-700">
+      <Main />
       <NextScript />
     </body>
   </Html>

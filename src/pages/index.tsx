@@ -9,7 +9,6 @@ export function Home() {
   return (
     <>
       <Head>
-        <title>Secret Santa</title>
         <meta name="description" content="" />
         <link rel="icon" href="/favicon.ico" />
       </Head>

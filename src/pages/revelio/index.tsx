@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { Button } from "~/components/Button";
 import { api } from "~/utils/api";
 import { LoadingOutlined } from "@ant-design/icons";
+import LayoutPage from "~/layouts/LayoutPage";
 function SantaAlreadyKnows() {
   const router = useRouter();
   return (
@@ -20,7 +21,7 @@ function SantaAlreadyKnows() {
       <br />
       If its not your link, dont cheat or will see you in Azkaban
       <Button
-        text="Make a new secret santa group"
+        text="Make a new Secret Santa group"
         isInverted
         onClick={async () => {
           await router.push("/");
@@ -38,7 +39,9 @@ function DontKnowSanta() {
         lineHeight: 1.5,
       }}
     >
-      👀 Santa,
+      👀 Santa ?
+      <br />
+      I think NOT
       <br />
       We Dont know you Muggle
       <br />
@@ -82,20 +85,19 @@ function KnowSanta(props: { member: member; id: string }) {
         </button>
       </div>
       <p className="py-2.5 text-2xl">
-        Who will You will be <br /> 🎁gifting this year?🎁
+        Who You will be <br /> 🎁Gifting this year?🎁
       </p>
     </>
   );
 }
-export default function Index() {
-  const router = useRouter();
-  const id = router.query.id as unknown as string;
+
+function WeHaveId({ id }: { id: string }) {
   const member = api.group.member_get.useQuery(
     { id },
     { enabled: id ? true : false },
   );
   return (
-    <div className="container flex flex-col justify-start text-center text-white">
+    <>
       {!member.isFetched ? (
         <span>
           Looking for Santa on the
@@ -103,11 +105,32 @@ export default function Index() {
           🐾 Marauders Map 🐾
           <br /> <LoadingOutlined />
         </span>
-      ) : member.isFetched && member.data && id ? (
+      ) : member.isFetched && member.data ? (
         <KnowSanta member={member.data} id={id} />
       ) : (
         <DontKnowSanta />
       )}
-    </div>
+    </>
+  );
+}
+
+interface TypeQuery {
+  id?: string;
+}
+export async function getServerSideProps(context: { query: TypeQuery }) {
+  const query = context.query;
+  const id = query.id ?? null;
+  return {
+    props: {
+      id,
+    },
+  };
+}
+
+export default function Index({ id }: { id?: string }) {
+  return (
+    <LayoutPage pageTitle="Revelio - Hints">
+      {id ? <WeHaveId id={id} /> : <DontKnowSanta />}
+    </LayoutPage>
   );
 }

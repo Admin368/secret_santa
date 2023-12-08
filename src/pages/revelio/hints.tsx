@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { useCallback, useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { Button } from "~/components/Button";
+import LayoutPage from "~/layouts/LayoutPage";
 // import CheckAuth from "~/components/CheckAuth";
 import { api } from "~/utils/api";
 
@@ -161,19 +162,17 @@ export default function Hints() {
           </Form>
         </Card>
       </Modal>
-      <div className="container flex flex-col justify-start text-center text-white">
+      <LayoutPage pageTitle="Revelio - Hints">
         <Spin spinning={!member.data || member.isLoading}>
           <div className="text-center text-white">
-            <p className="py-2.5 text-2xl font-bold text-white">
-              <strong>SANTA {member?.data?.name}</strong> Hold up!
+            <p className="py-2.5 text-3xl font-bold text-white">
+              <strong>{member?.data?.name}</strong> Hold up!
             </p>
             <p className="py-2.5">
               Before you know who <strong>You</strong> will be gifting this year
-            </p>
-            <p className="py-2.5">
-              Would you like to give hints to your Secret Santa?
               <br />
-              Give hints to the secret person getting you a gift 😉
+              Would you like to give hints of what you want to your Secret
+              Santa? 😉
             </p>
           </div>
           <div
@@ -255,7 +254,7 @@ export default function Hints() {
               text={`${hintsSend.isLoading ? "" : ">"} ${
                 !hints || hints.length < 1
                   ? "Dont give hints, Let's continue"
-                  : "Whisper hints to Santa"
+                  : "Whisper Hints to Santa"
               }`}
               isInverted
               onClick={async () => {
@@ -264,7 +263,7 @@ export default function Hints() {
             />
           </div>
         </Spin>
-      </div>
+      </LayoutPage>
     </>
   );
 }

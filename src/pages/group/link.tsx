@@ -6,6 +6,8 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import { toast } from "react-toastify";
 import { Spin } from "antd/lib";
 import CheckAuth from "~/components/CheckAuth";
+import LayoutPage from "~/layouts/LayoutPage";
+// import { env } from "~/env";
 
 interface linkType {
   link: string;
@@ -30,7 +32,7 @@ export default function link() {
     }
   }, [group.data]);
   return (
-    <div className="container flex flex-col items-center justify-start text-center text-white">
+    <LayoutPage>
       <CheckAuth />
       <div className="text-center text-white">
         <p className="py-2.5  text-2xl text-white">
@@ -90,6 +92,6 @@ export default function link() {
           }}
         />
       </div>
-    </div>
+    </LayoutPage>
   );
 }

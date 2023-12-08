@@ -3,6 +3,7 @@
 - revilio link expires after seen
 - snow
 - favicon change {cm:2023-12-08}
-- revelio api
-- footer create your on secret santa group
-- header onclick to home
+- revelio api {cm:2023-12-08}
+- footer create your on secret santa group {cm:2023-12-09}
+- header onclick to home {cm:2023-12-09}
+- if not matched "/group/final" should redirect to "group/match"
