@@ -1,0 +1,5 @@
+- vercel analytics
+- link creation based on root url
+- revilio link expires after seen
+- snow
+- favicon change

@@ -2,6 +2,7 @@ import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 import { type AppType } from "next/app";
 import ConfigProvider from "antd/lib/config-provider";
+import { Analytics } from "@vercel/analytics/react";
 
 import { api } from "~/utils/api";
 import theme from "~/theme/themeConfig";
@@ -66,6 +67,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
         />
         <ColorChanger />
         <ConfigProvider theme={theme}>
+          <Analytics />
           <Component {...pageProps} />
         </ConfigProvider>
       </SessionProvider>
