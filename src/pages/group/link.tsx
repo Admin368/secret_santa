@@ -26,7 +26,7 @@ export default function link() {
   useEffect(() => {
     if (group.data?.id && group.data?.password) {
       setLink({
-        link: `https://santa.maravian.com/group/final?id=${group.data.id}`,
+        link: `https://santa.maravian.com/group/link?id=${group.data.id}`,
         password: group.data.password,
       });
     }

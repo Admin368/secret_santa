@@ -158,7 +158,7 @@ export default function final() {
           <div className="text-center text-white">
             <p className="py-2.5  text-2xl text-white">Behold your santas</p>
             <p className="py-2.5 font-light">
-              The Santas have been email. Please notify them to check their
+              The Santas have been emailed. Please notify them to check their
               emails & trash
             </p>
           </div>

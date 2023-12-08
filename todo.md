@@ -7,3 +7,4 @@
 - footer create your on secret santa group {cm:2023-12-09}
 - header onclick to home {cm:2023-12-09}
 - if not matched "/group/final" should redirect to "group/match"
+- /revelio/hint should not show when link seen
