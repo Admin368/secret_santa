@@ -58,7 +58,6 @@ export default function Hints() {
       hintsUpdate
         .mutateAsync(values)
         .then(async (res) => {
-          console.log(res);
           toast.success(`Successfully updated your hints`);
           setModalIsOpen(false);
           await member.refetch();
@@ -85,7 +84,6 @@ export default function Hints() {
         hintsUpdate
           .mutateAsync(values)
           .then(async (res) => {
-            console.log(res);
             toast.success(`Successfully updated your hints`);
             setModalIsOpen(false);
             await member.refetch();
@@ -122,9 +120,7 @@ export default function Hints() {
   useEffect(() => {
     const hints = member.data?.hints;
     if (hints) {
-      console.log("member", member.data);
       const hintsArray = JSON.parse(hints) as unknown as string[];
-      console.log("hints", hintsArray);
       if (Array.isArray(hintsArray)) {
         setHints(hintsArray);
       }
@@ -222,7 +218,6 @@ export default function Hints() {
                           key: "delete",
                           label: "delete",
                           onClick: ({ id }) => {
-                            console.log(id);
                             onHintRemove({ index });
                           },
                         },

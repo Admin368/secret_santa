@@ -69,11 +69,7 @@ export default function CheckAuth() {
             <Input disabled />
           </Form.Item>
           <FormItem name={"pwd"} label="Password">
-            <Input
-              onChange={(e) => {
-                console.log(e.target.value);
-              }}
-            ></Input>
+            <Input />
           </FormItem>
           <FormItem>
             <Button htmlType="submit" type="primary" size="large">

@@ -55,7 +55,6 @@ export default function Match() {
       memberAdd
         .mutateAsync(values)
         .then(async (res) => {
-          console.log(res);
           toast.success(
             `Successfully ${values.is_edit ? "edited" : "added"} ${res.name}`,
           );
@@ -88,7 +87,7 @@ export default function Match() {
           })
           .catch((e) => {
             toast.error("Failed to remove user");
-            console.log(e);
+            console.error(e);
           });
       }
     },
@@ -132,7 +131,7 @@ export default function Match() {
           })
           .catch((e) => {
             toast.error("Failed to assign santas");
-            console.log(e);
+            console.error(e);
           });
       }
     },
@@ -251,7 +250,6 @@ export default function Match() {
                           key: "delete",
                           label: "delete",
                           onClick: ({ id }) => {
-                            console.log(id);
                             onMemberRemove({ id });
                           },
                         },
@@ -259,7 +257,6 @@ export default function Match() {
                           key: "edit",
                           label: "Edit",
                           onClick: (id) => {
-                            console.log(id);
                             modalOpen({ edit_member: member });
                           },
                         },

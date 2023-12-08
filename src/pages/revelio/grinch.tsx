@@ -79,13 +79,11 @@ function TextDisplay(props: PropsTextDisplay) {
   const changeText = useCallback(() => {
     const newIndex = index + 1;
     // index++;
-    console.log(`newIndex: ${newIndex}, lenght: ${revealing.length}`);
+    // console.log(`newIndex: ${newIndex}, lenght: ${revealing.length}`);
     if (newIndex === revealing.length - 2) {
       setIsSeen(true);
-      console.log("Seen");
       if (!props.santa.link_is_seen) {
         const { id } = props.santa;
-        console.log("Snitched");
         santa_seen_link
           .mutateAsync({ id })
           .then((res) => {
@@ -175,8 +173,8 @@ export default function revelio() {
     ) {
       receiver
         .mutateAsync({ id: santa.data.id })
-        .then((res) => {
-          console.log(res);
+        .then(() => {
+          // console.log(res);
         })
         .catch((e) => {
           console.error(e);

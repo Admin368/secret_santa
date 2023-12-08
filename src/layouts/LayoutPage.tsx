@@ -11,9 +11,6 @@ interface PropsLayoutPage {
 }
 export default function LayoutPage(props: PropsLayoutPage) {
   const router = useRouter();
-  useEffect(() => {
-    console.log(router);
-  }, [router]);
   return (
     // <div className="container flex flex-col items-center justify-start text-center text-white">
     <div

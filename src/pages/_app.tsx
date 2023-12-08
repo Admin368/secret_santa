@@ -25,7 +25,6 @@ function ColorChanger() {
   const colorsLength = useRecoilValue(stateColorsLength);
   useEffect(() => {
     const timer = setInterval(() => {
-      // console.log(`colorIndex:${colorIndex}, colorsLength:${colorsLength}`);
       if (colorIndex + 1 > colorsLength - 1) {
         setColorIndex(0);
         return;

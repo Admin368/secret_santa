@@ -61,7 +61,6 @@ export default function link() {
             <CopyToClipboard
               text={`Secret Santa Link (Only for link maker) Link: ${link?.link} Password: ${link?.password}`}
               onCopy={() => {
-                console.log("done");
                 toast.success("Link Copied to clipboard");
               }}
             >

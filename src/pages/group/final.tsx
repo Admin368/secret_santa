@@ -61,7 +61,6 @@ export default function final() {
       memberAdd
         .mutateAsync(values)
         .then(async (res) => {
-          console.log(res);
           toast.success(
             `Successfully ${values.is_edit ? "edited" : "added"} ${res.name}`,
           );
@@ -210,7 +209,6 @@ export default function final() {
                           key: "email_send",
                           label: "Resend Email",
                           onClick: ({ id }) => {
-                            console.log(id);
                             onMemberResendEmail({ member });
                           },
                         },
@@ -218,11 +216,10 @@ export default function final() {
                           key: "edit",
                           label: "Edit",
                           onClick: (id) => {
-                            console.log(id);
                             modalOpen({ edit_member: member });
                           },
                         },
-                        ...(member.link && true
+                        ...(member.link && false
                           ? [
                               {
                                 key: "link",

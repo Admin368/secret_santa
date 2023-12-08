@@ -117,7 +117,6 @@ export const groupRouter = createTRPCRouter({
       });
       const members = group?.members;
       if (group && members) {
-        console.log(`MAKING SANTA'S FOR ${group.id}`);
         function secretSanta(users: member[]) {
           const shuffledUsers = shuffle1(users) as unknown as member[];
           const assignments = [];
