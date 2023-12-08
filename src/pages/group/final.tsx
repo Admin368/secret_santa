@@ -111,7 +111,7 @@ export default function final() {
     // }
   }, [group.data, id, pwd]);
   return (
-    <LayoutPage>
+    <LayoutPage pageTitle="Group - Final">
       <CheckAuth />
       <Modal
         open={modalIsOpen}

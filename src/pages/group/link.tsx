@@ -32,7 +32,7 @@ export default function link() {
     }
   }, [group.data]);
   return (
-    <LayoutPage>
+    <LayoutPage pageTitle="Group - Link">
       <CheckAuth />
       <div className="text-center text-white">
         <p className="py-2.5  text-2xl text-white">

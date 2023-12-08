@@ -16,7 +16,7 @@ export async function getServerSideProps(context: { query: TypeQuery }) {
 }
 export default function PreLink({ link }: { link: string }) {
   return (
-    <LayoutPage>
+    <LayoutPage pageTitle="Group - Prelink">
       {link ? (
         <>
           You have been sent a link to find you whose secret santa you will be
