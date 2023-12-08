@@ -41,7 +41,7 @@ export default function match() {
   const modalOnSubmit = useCallback(() => {
     const formValues = formAddHint.getFieldsValue();
     const hints_ = hints;
-    if (hints.length > 5) {
+    if (hints.length >= 4) {
       toast.info(`You can only give 5 hints`);
       return;
     }
@@ -68,11 +68,14 @@ export default function match() {
 
   const onHintRemove = useCallback(
     (args: { index: number }) => {
-      const hints_ = hints;
-      delete hints_[args.index];
+      const _hints: string[] = [];
+      // delete hints_[args.index];
+      hints.map((hint, index) => {
+        if (index !== args.index) _hints.push(hint);
+      });
       const values = {
         id,
-        hints: JSON.stringify(hints_),
+        hints: JSON.stringify(_hints),
       };
       if (values) {
         hintsUpdate
@@ -99,8 +102,9 @@ export default function match() {
   useEffect(() => {
     const hints = member.data?.hints;
     if (hints) {
-      console.log("hints", member.data);
-      const hintsArray = JSON.stringify(hints) as unknown as string[];
+      console.log("member", member.data);
+      const hintsArray = JSON.parse(hints) as unknown as string[];
+      console.log("hints", hintsArray);
       if (Array.isArray(hintsArray)) {
         setHints(hintsArray);
       }
@@ -113,6 +117,10 @@ export default function match() {
         centered
         onCancel={() => {
           setModalIsOpen(false);
+        }}
+        okButtonProps={{
+          type: "primary",
+          color: "red",
         }}
         onOk={() => {
           // modalOnSubmit();
@@ -138,14 +146,15 @@ export default function match() {
         <Spin spinning={!member.data || member.isLoading}>
           <div className="text-center text-white">
             <p className="py-2.5 text-2xl font-bold text-white">
-              {`SANTA Hold up!`}
+              <strong>SANTA {member?.data?.name}</strong> Hold up!
             </p>
             <p className="py-2.5">
-              Before you know who you will be gifting this year
+              Before you know who <strong>You</strong> will be gifting this year
             </p>
             <p className="py-2.5">
-              Would you like to give hints to your Secret Santa about your wish
-              list 😉
+              Would you like to give hints to your Secret Santa?
+              <br />
+              Give hints to the secret person getting you a gift 😉
             </p>
           </div>
           <div
@@ -223,7 +232,7 @@ export default function match() {
             }}
           >
             <Button
-              text="Enough Hints, Lets Continue"
+              text="> Enough Hints, Lets Continue"
               isInverted
               onClick={async () => {
                 await onContinue();

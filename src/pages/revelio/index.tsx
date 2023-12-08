@@ -72,7 +72,7 @@ function KnowSanta(props: { member: member; id: string }) {
         <button
           onClick={async () => {
             await router.push({
-              pathname: "/grinch/hints",
+              pathname: "/revelio/hints",
               query: { id: props.id },
             });
           }}

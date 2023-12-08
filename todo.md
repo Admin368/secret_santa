@@ -1,5 +1,6 @@
-- vercel analytics
+- vercel analytics {cm:2023-12-08}
 - link creation based on root url
 - revilio link expires after seen
 - snow
 - favicon change
+- revelio api

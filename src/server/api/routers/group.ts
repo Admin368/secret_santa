@@ -140,7 +140,7 @@ export const groupRouter = createTRPCRouter({
               },
               data: {
                 receiver_id: receiver.id,
-                link: `${env.NEXTAUTH_URL}/grinch?id=${giver.id}`,
+                link: `${env.NEXTAUTH_URL}/revelio?id=${giver.id}`,
                 link_is_seen: false,
               },
             });
