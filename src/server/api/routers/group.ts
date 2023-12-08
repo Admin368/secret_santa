@@ -275,12 +275,20 @@ export const groupRouter = createTRPCRouter({
       }): Promise<
         TypeRes & {
           receiver_name?: string;
+          members?: string[];
         }
       > => {
         const santa = await ctx.db.member.findUnique({
           where: {
             id: input.id,
             // receiver_id: input.id,
+          },
+          include: {
+            group: {
+              include: {
+                members: true,
+              },
+            },
           },
         });
         if (!santa) return { message: "Could not find you", isError: true };
@@ -308,10 +316,15 @@ export const groupRouter = createTRPCRouter({
               "We could not find your reciever please contact link maker to match again",
           };
         }
+        const members: string[] = [];
+        santa.group.members.map((member) => {
+          members.push(member.name);
+        });
         return {
           isError: false,
-          message: "We found who yoar matched with",
+          message: "We found who you are matched with",
           receiver_name: receiver.name,
+          members,
         };
       },
     ),

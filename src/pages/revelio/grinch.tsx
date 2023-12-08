@@ -1,41 +1,74 @@
 import { LoadingOutlined } from "@ant-design/icons";
+import { member } from "@prisma/client";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 import React from "react";
+import { toast } from "react-toastify";
 import { Button } from "~/components/Button";
 import LayoutPage from "~/layouts/LayoutPage";
 import { api } from "~/utils/api";
 
 interface PropsTextDisplay {
   name: string;
-  santa_name?: string;
+  // santa_id: string;
+  // santa_name: string;
+  members: string[];
+  santa: member;
   isAuto?: boolean;
 }
 function TextDisplay(props: PropsTextDisplay) {
+  const santa_seen_link = api.group.member_link_seen.useMutation();
   const revealing = [
     <span>
-      <strong>Welcome {props.santa_name}</strong>
+      <strong>Welcome {props.santa.name}</strong>
       <br />
       You are about to discover
       <br />
       The person you will be gifting this year.
     </span>,
+    // <span>
+    //   <br />
+    //   Are you ready to
+    //   <br />
+    //   find out Whose
+    //   <br />
+    //   Secret Santa you are?
+    // </span>,
     <span>
-      The moment of truth has arrived!
       <br />
-      Are you ready to find out
-      <br />
-      Whose Secret Santa you are?
+      You group has:
+      {props.members.map((member, index) => (
+        <span key={index}>
+          <br />
+          {index + 1}.{props.name === member ? "You" : member},
+        </span>
+      ))}
     </span>,
-    // <p>You have been chosen to be the Secret Santa for</p>,
     <span>
-      {`${props.santa_name ?? " You"}`}
+      {`${props.santa.name}`}
       <br />
-      are the
+      You are the
       <br />
       Secret Santa for
       <br />
       <strong style={{ fontSize: 32 }}>{props.name}</strong>
+    </span>,
+    <span>
+      🤫
+      <br />
+      Now, This its a secret,
+      <br />
+      No one can know but you,
+      <br />
+    </span>,
+    <span>
+      You can go now,
+      <br />
+      There is nothing
+      <br />
+      to see here
+      <br />
+      🙃
     </span>,
   ];
   const [text, setText] = useState(revealing[0]);
@@ -46,19 +79,45 @@ function TextDisplay(props: PropsTextDisplay) {
   const changeText = useCallback(() => {
     const newIndex = index + 1;
     // index++;
-    if (newIndex < revealing.length) {
-      setIndex(newIndex);
-      setText(revealing[newIndex]);
-      return;
+    console.log(`newIndex: ${newIndex}, lenght: ${revealing.length}`);
+    if (newIndex === revealing.length - 2) {
+      setIsSeen(true);
+      console.log("Seen");
+      if (!props.santa.link_is_seen) {
+        const { id } = props.santa;
+        console.log("Snitched");
+        santa_seen_link
+          .mutateAsync({ id })
+          .then((res) => {
+            toast.info(res.message);
+          })
+          .catch((e) => {
+            console.error(e);
+          });
+      }
       //   index = 0;
     }
-    setIsSeen(true);
-  }, [isSeen, index]);
+    setIndex(newIndex);
+    setText(revealing[newIndex]);
+    return;
+  }, [isSeen, index, props.santa]);
 
   //   useEffect(() => {
   //     const timer = !isSeen && setInterval(changeText, 3000);
   //     return () => clearInterval(timer);
   //   }, [isSeen]);
+  function GetNextButtonText(index: number) {
+    switch (index) {
+      case 0:
+        return "Continue & Revelio";
+      case 1:
+        return "Whose Secret Santa Am I?";
+      case 2:
+        return "I Accept 🙂";
+      default:
+        return "Continue";
+    }
+  }
   useEffect(() => {
     let timer: NodeJS.Timeout | false = false;
     if (props.isAuto) {
@@ -89,7 +148,8 @@ function TextDisplay(props: PropsTextDisplay) {
         <>
           <br />
           <Button
-            text={`Continue - ${index} / ${revealing.length - 1}`}
+            // text={`${GetNextButtonText(index) ?? "Continue"} - ${index + 1} / ${
+            text={`${GetNextButtonText(index) ?? "Continue"}`}
             onClick={() => {
               changeText();
             }}
@@ -108,7 +168,11 @@ export default function revelio() {
   );
   const receiver = api.group.member_get_my_receiver.useMutation();
   useEffect(() => {
-    if (santa.data && !receiver.data?.receiver_name) {
+    if (
+      santa.data &&
+      !santa.data.link_is_seen &&
+      !receiver.data?.receiver_name
+    ) {
       receiver
         .mutateAsync({ id: santa.data.id })
         .then((res) => {
@@ -122,12 +186,23 @@ export default function revelio() {
   return (
     // <div className=" container flex min-h-screen flex-col items-center justify-center text-center text-white">
     <LayoutPage logoIsTop pageTitle="Revelio - Grinch">
-      {receiver.data?.receiver_name ? (
+      {receiver.data?.receiver_name && receiver.data?.members && santa.data ? (
         <TextDisplay
           name={receiver.data?.receiver_name}
-          santa_name={santa.data?.name}
+          santa={santa.data}
+          members={receiver.data?.members}
           // isAuto
         />
+      ) : santa.data?.link_is_seen ? (
+        <>
+          <span style={{ fontSize: 21 }}>
+            Sorry, <br />
+            🤷‍♀️ We already told you 🤷‍♀️
+          </span>
+          If you didn't see the link ask
+          <br />
+          The link maker to resend the email
+        </>
       ) : (
         <LoadingOutlined />
       )}

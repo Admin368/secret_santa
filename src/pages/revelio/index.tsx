@@ -4,6 +4,7 @@ import { Button } from "~/components/Button";
 import { api } from "~/utils/api";
 import { LoadingOutlined } from "@ant-design/icons";
 import LayoutPage from "~/layouts/LayoutPage";
+import { useState } from "react";
 function SantaAlreadyKnows() {
   const router = useRouter();
   return (
@@ -11,6 +12,10 @@ function SantaAlreadyKnows() {
       className="py-2.5 text-2xl font-bold text-white"
       style={{
         lineHeight: 1.5,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
       }}
     >
       👀 Santa,
@@ -58,6 +63,7 @@ function DontKnowSanta() {
 
 function KnowSanta(props: { member: member; id: string }) {
   const router = useRouter();
+  const [isClicked, setIsClicked] = useState(false);
   return props.member.link_is_seen ? (
     <SantaAlreadyKnows />
   ) : (
@@ -65,7 +71,7 @@ function KnowSanta(props: { member: member; id: string }) {
       <div>
         <p className="py-2.5 text-3xl font-bold text-white">
           Welcome,
-          <br /> {`Santa ${props.member.name}`}
+          <br /> <strong>{`Santa ${props.member.name}`}</strong>
         </p>
         <p className="py-2.5 text-2xl">
           You have been chosen to be somebody's secret santa😉
@@ -73,15 +79,21 @@ function KnowSanta(props: { member: member; id: string }) {
       </div>
       <div>
         <button
+          disabled={isClicked}
           onClick={async () => {
-            await router.push({
-              pathname: "/revelio/hints",
-              query: { id: props.id },
-            });
+            setIsClicked(true);
+            setTimeout(() => {
+              void router.push({
+                pathname: "/revelio/hints",
+                query: { id: props.id },
+              });
+            }, 1000);
           }}
           className="h-48 w-48 rounded-full border bg-transparent p-6 "
         >
-          <p className="text-5xl font-extrabold text-white">FIND OUT</p>
+          <p className="text-5xl font-extrabold text-white">
+            {!isClicked ? "FIND OUT" : <LoadingOutlined />}
+          </p>
         </button>
       </div>
       <p className="py-2.5 text-2xl">
