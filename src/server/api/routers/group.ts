@@ -5,11 +5,8 @@ import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { shuffle1 } from "./util";
 import { env } from "~/env";
-import { getBaseUrl } from "~/utils/api";
 
-// const BASE_URL = ;
-const BASE_URL = getBaseUrl() ?? env.NEXTAUTH_URL;
-console.log(`BASE_URL:${BASE_URL}`);
+const BASE_URL = process.env.VERCEL_URL ?? env.NEXTAUTH_URL;
 
 interface TypeRes {
   isError: boolean;
@@ -108,6 +105,7 @@ export const groupRouter = createTRPCRouter({
   members_make_santas: publicProcedure
     .input(z.object({ group_id: z.string().min(1) }))
     .input(z.object({ pwd: z.string().min(1) }))
+    .input(z.object({ is_rematch: z.boolean().optional() }))
     .mutation(async ({ ctx, input }) => {
       const group = await ctx.db.group.findUnique({
         where: {
@@ -139,6 +137,22 @@ export const groupRouter = createTRPCRouter({
         }
         const assignedMembers: member[] = [];
         const assignments = secretSanta(members);
+        if (input.is_rematch && group.is_matched) {
+          await Promise.all(
+            assignments.map(async ({ giver }) => {
+              await ctx.db.member.update({
+                where: {
+                  id: giver.id,
+                },
+                data: {
+                  receiver_id: null,
+                  link: null,
+                  link_is_seen: false,
+                },
+              });
+            }),
+          );
+        }
         await Promise.all(
           assignments.map(async ({ giver, receiver }) => {
             const assignedMember = await ctx.db.member.update({
