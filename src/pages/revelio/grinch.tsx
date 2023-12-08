@@ -1,5 +1,5 @@
 import { LoadingOutlined } from "@ant-design/icons";
-import { member } from "@prisma/client";
+import type { member } from "@prisma/client";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 import React from "react";
