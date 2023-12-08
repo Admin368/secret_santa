@@ -58,12 +58,15 @@ export default function Hints() {
       hintsUpdate
         .mutateAsync(values)
         .then(async (res) => {
-          toast.success(`Successfully updated your hints`);
+          if (!res) {
+            toast.error("Failed to update hints");
+          }
+          toast.success(res.message ?? `Successfully updated your hints`);
           setModalIsOpen(false);
           await member.refetch();
         })
         .catch((e) => {
-          toast.error("failed to update hints");
+          toast.error("Failed to update hints");
           console.error(e);
         });
     }
@@ -84,12 +87,15 @@ export default function Hints() {
         hintsUpdate
           .mutateAsync(values)
           .then(async (res) => {
-            toast.success(`Successfully updated your hints`);
+            if (!res) {
+              toast.error("Failed to update hints");
+            }
+            toast.success(res.message ?? `Successfully updated your hints`);
             setModalIsOpen(false);
             await member.refetch();
           })
           .catch((e) => {
-            toast.error("failed to update hints");
+            toast.error("Failed to update hints");
             console.error(e);
           });
       }
@@ -217,7 +223,7 @@ export default function Hints() {
                         {
                           key: "delete",
                           label: "delete",
-                          onClick: ({ id }) => {
+                          onClick: () => {
                             onHintRemove({ index });
                           },
                         },

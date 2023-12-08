@@ -256,7 +256,7 @@ export default function Match() {
                         {
                           key: "edit",
                           label: "Edit",
-                          onClick: (id) => {
+                          onClick: () => {
                             modalOpen({ edit_member: member });
                           },
                         },

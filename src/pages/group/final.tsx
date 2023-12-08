@@ -208,14 +208,14 @@ export default function final() {
                         {
                           key: "email_send",
                           label: "Resend Email",
-                          onClick: ({ id }) => {
+                          onClick: () => {
                             onMemberResendEmail({ member });
                           },
                         },
                         {
                           key: "edit",
                           label: "Edit",
-                          onClick: (id) => {
+                          onClick: () => {
                             modalOpen({ edit_member: member });
                           },
                         },
