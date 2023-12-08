@@ -5,8 +5,12 @@ import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { shuffle1 } from "./util";
 import { env } from "~/env";
+import { getBaseUrl } from "~/utils/api";
 
-// const BASE_URL = "https://192.168.1.102:3000";
+// const BASE_URL = ;
+const BASE_URL = getBaseUrl() ?? env.NEXTAUTH_URL;
+console.log(`BASE_URL:${BASE_URL}`);
+
 interface TypeRes {
   isError: boolean;
   message: string;
@@ -143,7 +147,7 @@ export const groupRouter = createTRPCRouter({
               },
               data: {
                 receiver_id: receiver.id,
-                link: `${env.NEXTAUTH_URL}/revelio?id=${giver.id}`,
+                link: `${BASE_URL}/revelio?id=${giver.id}`,
                 link_is_seen: false,
               },
             });
