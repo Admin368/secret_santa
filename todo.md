@@ -10,3 +10,5 @@
 - if not matched "/group/final" should redirect to "group/match"
 - /revelio/hint should not show when link seen
 - fading in revelio info
+- prelink for email {cm:2023-12-09}
+- hint link for email {cm:2023-12-09}

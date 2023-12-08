@@ -9,7 +9,6 @@ import { api } from "~/utils/api";
 // export default Hints;
 interface TypeQuery {
   id?: string;
-  receiver?: member;
 }
 // interface TypeHintData {
 //   santa_name?: string;
