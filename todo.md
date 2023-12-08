@@ -9,6 +9,6 @@
 - header onclick to home {cm:2023-12-09}
 - if not matched "/group/final" should redirect to "group/match"
 - /revelio/hint should not show when link seen
-- fading in revelio info
+- fading in revelio info {cm:2023-12-09}
 - prelink for email {cm:2023-12-09}
 - hint link for email {cm:2023-12-09}
