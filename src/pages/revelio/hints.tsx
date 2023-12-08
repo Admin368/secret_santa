@@ -1,4 +1,5 @@
 // import { group } from "@prisma/client";
+import { LoadingOutlined } from "@ant-design/icons";
 import { Card, Form, Input, Modal, Spin } from "antd/lib";
 import { useRouter } from "next/router";
 import { useCallback, useState, useEffect } from "react";
@@ -19,6 +20,8 @@ export default function Hints() {
   );
   //   const memberType = group.data?.members[0];
   const hintsUpdate = api.group.member_hints_update.useMutation();
+  const hintsSend = api.group.member_hints_send.useMutation();
+
   //   const memberRemove = api.group.member_remove.useMutation();
   //   const membersMakeSantas = api.group.members_make_santas.useMutation();
 
@@ -96,8 +99,24 @@ export default function Hints() {
   );
 
   const onContinue = useCallback(async () => {
-    await router.push({ pathname: "/revelio/grinch", query: { id } });
-  }, [id, router]);
+    if (!hints || hints.length < 1) {
+      await router.push({ pathname: "/revelio/grinch", query: { id } });
+    }
+    hintsSend
+      .mutateAsync({ id })
+      .then(async (res) => {
+        if (res.isError) {
+          toast.error(res.message);
+          return;
+        }
+        toast.success(res.message);
+        await router.push({ pathname: "/revelio/grinch", query: { id } });
+      })
+      .catch((e) => {
+        toast.error("Failed to send hints to santa");
+        console.error(e);
+      });
+  }, [id, router, hints]);
 
   useEffect(() => {
     const hints = member.data?.hints;
@@ -232,7 +251,12 @@ export default function Hints() {
             }}
           >
             <Button
-              text="> Enough Hints, Lets Continue"
+              isLoading={hintsSend.isLoading}
+              text={`${hintsSend.isLoading ? "" : ">"} ${
+                !hints || hints.length < 1
+                  ? "Dont give hints, Let's continue"
+                  : "Whisper hints to Santa"
+              }`}
               isInverted
               onClick={async () => {
                 await onContinue();
