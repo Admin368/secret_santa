@@ -7,7 +7,10 @@ import { shuffle1 } from "./util";
 import { env } from "~/env";
 
 // const BASE_URL = "https://192.168.1.102:3000";
-
+interface TypeRes {
+  isError: boolean;
+  message: string;
+}
 export const groupRouter = createTRPCRouter({
   test: publicProcedure.query(() => {
     return {
@@ -177,14 +180,156 @@ export const groupRouter = createTRPCRouter({
   member_hints_update: publicProcedure
     .input(z.object({ id: z.string().min(1) }))
     .input(z.object({ hints: z.string().min(1) }))
-    .mutation(async ({ ctx, input }) => {
-      return ctx.db.member.update({
-        where: {
-          id: input.id,
-        },
-        data: {
-          hints: input.hints,
-        },
-      });
+    .mutation(async ({ ctx, input }): Promise<TypeRes> => {
+      try {
+        await ctx.db.member.update({
+          where: {
+            id: input.id,
+          },
+          data: {
+            hints: input.hints,
+          },
+        });
+        return {
+          isError: false,
+          message: "Successfully updated your hints",
+        };
+      } catch {
+        return {
+          isError: false,
+          message: "Failed to update your hints",
+        };
+      }
     }),
+  member_hints_send: publicProcedure
+    .input(z.object({ id: z.string().min(1) }))
+    .mutation(
+      async ({ ctx, input }): Promise<TypeRes & { message: string }> => {
+        const receiver = await ctx.db.member.findUnique({
+          where: {
+            id: input.id,
+          },
+        });
+        if (!receiver) {
+          return {
+            isError: true,
+            message: "Your are not assigned to any group",
+          };
+        }
+        const santa = await ctx.db.member.findUnique({
+          where: {
+            receiver_id: receiver.id,
+          },
+        });
+        if (!santa) {
+          return {
+            isError: true,
+            message:
+              "You are not matched yet with a santa contact your link maker",
+          };
+        }
+        if (!receiver.hints) {
+          return { isError: false, message: "You dont have hints" };
+        }
+        const hints = JSON.parse(receiver.hints) as unknown as string[];
+        if (!Array.isArray(hints)) {
+          return {
+            isError: true,
+            message: "Invalid hints format",
+          };
+        }
+        return {
+          isError: false,
+          message: "A message has been sent to you secret Santa",
+        };
+      },
+    ),
+  member_get_my_receiver: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .mutation(
+      async ({
+        ctx,
+        input,
+      }): Promise<
+        TypeRes & {
+          receiver_name?: string;
+        }
+      > => {
+        const santa = await ctx.db.member.findUnique({
+          where: {
+            id: input.id,
+            // receiver_id: input.id,
+          },
+        });
+        if (!santa) return { message: "Could not find you", isError: true };
+        if (santa.link_is_seen) {
+          return {
+            message: "We already told you who the santa is",
+            isError: true,
+          };
+        }
+        if (!santa.receiver_id) {
+          return {
+            isError: true,
+            message: "You have not been matched yet, please contant link maker",
+          };
+        }
+        const receiver = await ctx.db.member.findUnique({
+          where: {
+            id: santa.receiver_id,
+          },
+        });
+        if (!receiver) {
+          return {
+            isError: true,
+            message:
+              "We could not find your reciever please contact link maker to match again",
+          };
+        }
+        return {
+          isError: false,
+          message: "We found who yoar matched with",
+          receiver_name: receiver.name,
+        };
+      },
+    ),
+  member_link_seen: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .mutation(
+      async ({
+        ctx,
+        input,
+      }): Promise<
+        TypeRes & {
+          receiver_name?: string;
+        }
+      > => {
+        const member = await ctx.db.member.update({
+          where: {
+            id: input.id,
+          },
+          data: {
+            link_is_seen: true,
+          },
+        });
+        if (!member) {
+          return {
+            isError: true,
+            message: "Failed to destroy your link",
+          };
+        }
+        return {
+          isError: false,
+          message: "Your receiver info will now self destruct",
+        };
+      },
+    ),
 });

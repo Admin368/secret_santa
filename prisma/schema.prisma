@@ -92,7 +92,8 @@ model member {
   name        String
   email       String
   hints       String?
-  receiver_id String?
+  hints_sent Boolean?
+  receiver_id String? @unique
   link        String?
   link_is_seen Boolean?
   group_id    String

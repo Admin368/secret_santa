@@ -7,7 +7,7 @@ import { Button } from "~/components/Button";
 // import CheckAuth from "~/components/CheckAuth";
 import { api } from "~/utils/api";
 
-export default function match() {
+export default function Hints() {
   // url params
   const router = useRouter();
   const id = router.query.id as string;
@@ -96,7 +96,7 @@ export default function match() {
   );
 
   const onContinue = useCallback(async () => {
-    await router.push({ pathname: "/grinch/revelio", query: { id } });
+    await router.push({ pathname: "/revelio/grinch", query: { id } });
   }, [id, router]);
 
   useEffect(() => {
@@ -187,7 +187,7 @@ export default function match() {
                 // border: `1px solid white`,
               }}
             >
-              {hints ? (
+              {hints.length > 0 ? (
                 hints.map((hint, index) => {
                   return (
                     <Button
