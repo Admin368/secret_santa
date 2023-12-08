@@ -32,16 +32,14 @@ export function Button(props: ButtonProps) {
           label: item.label,
         }))}
         onClick={({ key }) => {
-          console.log(key);
           const menuOption = props.menuOptions?.find(
             (item) => item.key === key,
           );
           if (menuOption && props.id) {
-            console.log(menuOption);
             menuOption.onClick({ id: props.id });
             setMenuOpen(false);
           } else {
-            console.log(`Please give your Buttons id props`);
+            console.error(`Please give your Buttons id props`);
           }
           // if(props.menuOptions[keyPath].)
           // switch(key) {
@@ -82,6 +80,8 @@ export function Button(props: ButtonProps) {
           height: "100%",
           display: "flex",
           flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
         <span style={{ fontWeight: "900" }}>{props.text}</span>

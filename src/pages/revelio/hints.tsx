@@ -1,13 +1,15 @@
 // import { group } from "@prisma/client";
+// import { LoadingOutlined } from "@ant-design/icons";
 import { Card, Form, Input, Modal, Spin } from "antd/lib";
 import { useRouter } from "next/router";
 import { useCallback, useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { Button } from "~/components/Button";
+import LayoutPage from "~/layouts/LayoutPage";
 // import CheckAuth from "~/components/CheckAuth";
 import { api } from "~/utils/api";
 
-export default function match() {
+export default function Hints() {
   // url params
   const router = useRouter();
   const id = router.query.id as string;
@@ -19,6 +21,8 @@ export default function match() {
   );
   //   const memberType = group.data?.members[0];
   const hintsUpdate = api.group.member_hints_update.useMutation();
+  const hintsSend = api.group.member_hints_send.useMutation();
+
   //   const memberRemove = api.group.member_remove.useMutation();
   //   const membersMakeSantas = api.group.members_make_santas.useMutation();
 
@@ -41,7 +45,7 @@ export default function match() {
   const modalOnSubmit = useCallback(() => {
     const formValues = formAddHint.getFieldsValue();
     const hints_ = hints;
-    if (hints.length > 5) {
+    if (hints.length >= 4) {
       toast.info(`You can only give 5 hints`);
       return;
     }
@@ -54,13 +58,15 @@ export default function match() {
       hintsUpdate
         .mutateAsync(values)
         .then(async (res) => {
-          console.log(res);
-          toast.success(`Successfully updated your hints`);
+          if (!res) {
+            toast.error("Failed to update hints");
+          }
+          toast.success(res.message ?? `Successfully updated your hints`);
           setModalIsOpen(false);
           await member.refetch();
         })
         .catch((e) => {
-          toast.error("failed to update hints");
+          toast.error("Failed to update hints");
           console.error(e);
         });
     }
@@ -68,23 +74,28 @@ export default function match() {
 
   const onHintRemove = useCallback(
     (args: { index: number }) => {
-      const hints_ = hints;
-      delete hints_[args.index];
+      const _hints: string[] = [];
+      // delete hints_[args.index];
+      hints.map((hint, index) => {
+        if (index !== args.index) _hints.push(hint);
+      });
       const values = {
         id,
-        hints: JSON.stringify(hints_),
+        hints: JSON.stringify(_hints),
       };
       if (values) {
         hintsUpdate
           .mutateAsync(values)
           .then(async (res) => {
-            console.log(res);
-            toast.success(`Successfully updated your hints`);
+            if (!res) {
+              toast.error("Failed to update hints");
+            }
+            toast.success(res.message ?? `Successfully updated your hints`);
             setModalIsOpen(false);
             await member.refetch();
           })
           .catch((e) => {
-            toast.error("failed to update hints");
+            toast.error("Failed to update hints");
             console.error(e);
           });
       }
@@ -93,14 +104,29 @@ export default function match() {
   );
 
   const onContinue = useCallback(async () => {
-    await router.push({ pathname: "/grinch/revelio", query: { id } });
-  }, [id, router]);
+    if (!hints || hints.length < 1) {
+      await router.push({ pathname: "/revelio/grinch", query: { id } });
+    }
+    hintsSend
+      .mutateAsync({ id })
+      .then(async (res) => {
+        if (res.isError) {
+          toast.error(res.message);
+          return;
+        }
+        toast.success(res.message);
+        await router.push({ pathname: "/revelio/grinch", query: { id } });
+      })
+      .catch((e) => {
+        toast.error("Failed to send hints to santa");
+        console.error(e);
+      });
+  }, [id, router, hints]);
 
   useEffect(() => {
     const hints = member.data?.hints;
     if (hints) {
-      console.log("hints", member.data);
-      const hintsArray = JSON.stringify(hints) as unknown as string[];
+      const hintsArray = JSON.parse(hints) as unknown as string[];
       if (Array.isArray(hintsArray)) {
         setHints(hintsArray);
       }
@@ -113,6 +139,10 @@ export default function match() {
         centered
         onCancel={() => {
           setModalIsOpen(false);
+        }}
+        okButtonProps={{
+          type: "primary",
+          color: "red",
         }}
         onOk={() => {
           // modalOnSubmit();
@@ -134,18 +164,17 @@ export default function match() {
           </Form>
         </Card>
       </Modal>
-      <div className="container flex flex-col justify-start text-center text-white">
+      <LayoutPage pageTitle="Revelio - Hints">
         <Spin spinning={!member.data || member.isLoading}>
           <div className="text-center text-white">
-            <p className="py-2.5 text-2xl font-bold text-white">
-              {`SANTA Hold up!`}
+            <p className="py-2.5 text-3xl font-bold text-white">
+              <strong>{member?.data?.name}</strong> Hold up!
             </p>
             <p className="py-2.5">
-              Before you know who you will be gifting this year
-            </p>
-            <p className="py-2.5">
-              Would you like to give hints to your Secret Santa about your wish
-              list 😉
+              Before you know who <strong>You</strong> will be gifting this year
+              <br />
+              Would you like to give hints of what you want to your Secret
+              Santa? 😉
             </p>
           </div>
           <div
@@ -178,7 +207,7 @@ export default function match() {
                 // border: `1px solid white`,
               }}
             >
-              {hints ? (
+              {hints.length > 0 ? (
                 hints.map((hint, index) => {
                   return (
                     <Button
@@ -194,8 +223,7 @@ export default function match() {
                         {
                           key: "delete",
                           label: "delete",
-                          onClick: ({ id }) => {
-                            console.log(id);
+                          onClick: () => {
                             onHintRemove({ index });
                           },
                         },
@@ -223,7 +251,12 @@ export default function match() {
             }}
           >
             <Button
-              text="Enough Hints, Lets Continue"
+              isLoading={hintsSend.isLoading}
+              text={`${hintsSend.isLoading ? "" : ">"} ${
+                !hints || hints.length < 1
+                  ? "Dont give hints, Let's continue"
+                  : "Whisper Hints to Santa"
+              }`}
               isInverted
               onClick={async () => {
                 await onContinue();
@@ -231,7 +264,7 @@ export default function match() {
             />
           </div>
         </Spin>
-      </div>
+      </LayoutPage>
     </>
   );
 }

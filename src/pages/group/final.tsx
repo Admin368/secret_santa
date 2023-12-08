@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Button } from "~/components/Button";
 import CheckAuth from "~/components/CheckAuth";
+import LayoutPage from "~/layouts/LayoutPage";
 import { api } from "~/utils/api";
 
 export default function final() {
@@ -60,7 +61,6 @@ export default function final() {
       memberAdd
         .mutateAsync(values)
         .then(async (res) => {
-          console.log(res);
           toast.success(
             `Successfully ${values.is_edit ? "edited" : "added"} ${res.name}`,
           );
@@ -111,7 +111,7 @@ export default function final() {
     // }
   }, [group.data, id, pwd]);
   return (
-    <>
+    <LayoutPage>
       <CheckAuth />
       <Modal
         open={modalIsOpen}
@@ -152,12 +152,12 @@ export default function final() {
           </Form>
         </Card>
       </Modal>
-      <div className="container flex w-80 flex-col justify-start text-center text-white">
+      <div className="container flex flex-col justify-start text-center text-white">
         <Spin spinning={!group.data || group.isLoading}>
           <div className="text-center text-white">
             <p className="py-2.5  text-2xl text-white">Behold your santas</p>
             <p className="py-2.5 font-light">
-              The Santas have been notified. Please notify them to check their
+              The Santas have been emailed. Please notify them to check their
               emails & trash
             </p>
           </div>
@@ -208,20 +208,18 @@ export default function final() {
                         {
                           key: "email_send",
                           label: "Resend Email",
-                          onClick: ({ id }) => {
-                            console.log(id);
+                          onClick: () => {
                             onMemberResendEmail({ member });
                           },
                         },
                         {
                           key: "edit",
                           label: "Edit",
-                          onClick: (id) => {
-                            console.log(id);
+                          onClick: () => {
                             modalOpen({ edit_member: member });
                           },
                         },
-                        ...(member.link && true
+                        ...(member.link && false
                           ? [
                               {
                                 key: "link",
@@ -267,6 +265,6 @@ export default function final() {
           </p>
         </Spin>
       </div>
-    </>
+    </LayoutPage>
   );
 }

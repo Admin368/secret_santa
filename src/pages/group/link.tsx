@@ -6,6 +6,8 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import { toast } from "react-toastify";
 import { Spin } from "antd/lib";
 import CheckAuth from "~/components/CheckAuth";
+import LayoutPage from "~/layouts/LayoutPage";
+// import { env } from "~/env";
 
 interface linkType {
   link: string;
@@ -24,13 +26,13 @@ export default function link() {
   useEffect(() => {
     if (group.data?.id && group.data?.password) {
       setLink({
-        link: `https://santa.maravian.com/group/final?id=${group.data.id}`,
+        link: `https://santa.maravian.com/group/link?id=${group.data.id}`,
         password: group.data.password,
       });
     }
   }, [group.data]);
   return (
-    <div className="container flex flex-col items-center justify-start text-center text-white">
+    <LayoutPage>
       <CheckAuth />
       <div className="text-center text-white">
         <p className="py-2.5  text-2xl text-white">
@@ -59,7 +61,6 @@ export default function link() {
             <CopyToClipboard
               text={`Secret Santa Link (Only for link maker) Link: ${link?.link} Password: ${link?.password}`}
               onCopy={() => {
-                console.log("done");
                 toast.success("Link Copied to clipboard");
               }}
             >
@@ -90,6 +91,6 @@ export default function link() {
           }}
         />
       </div>
-    </div>
+    </LayoutPage>
   );
 }

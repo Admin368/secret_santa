@@ -2,6 +2,7 @@ import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 import { type AppType } from "next/app";
 import ConfigProvider from "antd/lib/config-provider";
+import { Analytics } from "@vercel/analytics/react";
 
 import { api } from "~/utils/api";
 import theme from "~/theme/themeConfig";
@@ -24,7 +25,6 @@ function ColorChanger() {
   const colorsLength = useRecoilValue(stateColorsLength);
   useEffect(() => {
     const timer = setInterval(() => {
-      // console.log(`colorIndex:${colorIndex}, colorsLength:${colorsLength}`);
       if (colorIndex + 1 > colorsLength - 1) {
         setColorIndex(0);
         return;
@@ -66,6 +66,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
         />
         <ColorChanger />
         <ConfigProvider theme={theme}>
+          <Analytics />
           <Component {...pageProps} />
         </ConfigProvider>
       </SessionProvider>

@@ -6,8 +6,12 @@ import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { shuffle1 } from "./util";
 import { env } from "~/env";
 
-// const BASE_URL = "https://192.168.1.102:3000";
+const BASE_URL = process.env.VERCEL_URL ?? env.NEXTAUTH_URL;
 
+interface TypeRes {
+  isError: boolean;
+  message: string;
+}
 export const groupRouter = createTRPCRouter({
   test: publicProcedure.query(() => {
     return {
@@ -101,6 +105,7 @@ export const groupRouter = createTRPCRouter({
   members_make_santas: publicProcedure
     .input(z.object({ group_id: z.string().min(1) }))
     .input(z.object({ pwd: z.string().min(1) }))
+    .input(z.object({ is_rematch: z.boolean().optional() }))
     .mutation(async ({ ctx, input }) => {
       const group = await ctx.db.group.findUnique({
         where: {
@@ -112,7 +117,6 @@ export const groupRouter = createTRPCRouter({
       });
       const members = group?.members;
       if (group && members) {
-        console.log(`MAKING SANTA'S FOR ${group.id}`);
         function secretSanta(users: member[]) {
           const shuffledUsers = shuffle1(users) as unknown as member[];
           const assignments = [];
@@ -132,6 +136,22 @@ export const groupRouter = createTRPCRouter({
         }
         const assignedMembers: member[] = [];
         const assignments = secretSanta(members);
+        if (input.is_rematch && group.is_matched) {
+          await Promise.all(
+            assignments.map(async ({ giver }) => {
+              await ctx.db.member.update({
+                where: {
+                  id: giver.id,
+                },
+                data: {
+                  receiver_id: null,
+                  link: null,
+                  link_is_seen: false,
+                },
+              });
+            }),
+          );
+        }
         await Promise.all(
           assignments.map(async ({ giver, receiver }) => {
             const assignedMember = await ctx.db.member.update({
@@ -140,7 +160,7 @@ export const groupRouter = createTRPCRouter({
               },
               data: {
                 receiver_id: receiver.id,
-                link: `${env.NEXTAUTH_URL}/grinch?id=${giver.id}`,
+                link: `${BASE_URL}/revelio?id=${giver.id}`,
                 link_is_seen: false,
               },
             });
@@ -177,14 +197,190 @@ export const groupRouter = createTRPCRouter({
   member_hints_update: publicProcedure
     .input(z.object({ id: z.string().min(1) }))
     .input(z.object({ hints: z.string().min(1) }))
-    .mutation(async ({ ctx, input }) => {
-      return ctx.db.member.update({
-        where: {
-          id: input.id,
-        },
-        data: {
-          hints: input.hints,
-        },
-      });
+    .mutation(async ({ ctx, input }): Promise<TypeRes> => {
+      try {
+        await ctx.db.member.update({
+          where: {
+            id: input.id,
+          },
+          data: {
+            hints: input.hints,
+          },
+        });
+        return {
+          isError: false,
+          message: "Successfully updated your hints",
+        };
+      } catch {
+        return {
+          isError: false,
+          message: "Failed to update your hints",
+        };
+      }
     }),
+  member_hints_send: publicProcedure
+    .input(z.object({ id: z.string().min(1) }))
+    .mutation(
+      async ({ ctx, input }): Promise<TypeRes & { message: string }> => {
+        const receiver = await ctx.db.member.findUnique({
+          where: {
+            id: input.id,
+          },
+        });
+        if (!receiver) {
+          return {
+            isError: true,
+            message: "Your are not assigned to any group",
+          };
+        }
+        const santa = await ctx.db.member.findUnique({
+          where: {
+            receiver_id: receiver.id,
+          },
+        });
+        if (!santa) {
+          return {
+            isError: true,
+            message:
+              "You are not matched yet with a santa contact your link maker",
+          };
+        }
+        if (!receiver.hints) {
+          return { isError: false, message: "You dont have hints" };
+        }
+        const hints = JSON.parse(receiver.hints) as unknown as string[];
+        if (!Array.isArray(hints)) {
+          return {
+            isError: true,
+            message: "Invalid hints format",
+          };
+        }
+        return {
+          isError: false,
+          message: "A message has been sent to your Secret Santa",
+        };
+      },
+    ),
+  member_get_my_receiver: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        hintsOnly: z.boolean().optional(),
+      }),
+    )
+    .mutation(
+      async ({
+        ctx,
+        input,
+      }): Promise<
+        TypeRes & {
+          santa_name?: string;
+          receiver_name?: string;
+          members?: string[];
+          hints?: string[];
+        }
+      > => {
+        const santa = await ctx.db.member.findUnique({
+          where: {
+            id: input.id,
+            // receiver_id: input.id,
+          },
+          include: {
+            group: {
+              include: {
+                members: true,
+              },
+            },
+          },
+        });
+        if (!santa) return { message: "Could not find you", isError: true };
+
+        if (!santa.receiver_id) {
+          return {
+            isError: true,
+            message: "You have not been matched yet, please contant link maker",
+          };
+        }
+        const receiver = await ctx.db.member.findUnique({
+          where: {
+            id: santa.receiver_id,
+          },
+        });
+        if (!receiver) {
+          return {
+            isError: true,
+            message:
+              "We could not find your receiver please contact link maker to match again",
+          };
+        }
+        const hints: string[] = [];
+        if (receiver.hints) {
+          const _hints: string[] = JSON.parse(receiver.hints) as string[];
+          if (Array.isArray(_hints)) {
+            _hints.map((hint) => {
+              hints.push(hint);
+            });
+          }
+        }
+        if (input.hintsOnly) {
+          return {
+            isError: false,
+            message: "Successfully got your hint",
+            santa_name: santa.name,
+            hints,
+          };
+        }
+        if (santa.link_is_seen) {
+          return {
+            message: "We already told you who the santa is",
+            isError: true,
+          };
+        }
+        const members: string[] = [];
+        santa.group.members.map((member) => {
+          members.push(member.name);
+        });
+        return {
+          isError: false,
+          message: "We found who you are matched with",
+          receiver_name: receiver.name,
+          members,
+        };
+      },
+    ),
+  member_link_seen: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .mutation(
+      async ({
+        ctx,
+        input,
+      }): Promise<
+        TypeRes & {
+          receiver_name?: string;
+        }
+      > => {
+        const member = await ctx.db.member.update({
+          where: {
+            id: input.id,
+          },
+          data: {
+            link_is_seen: true,
+          },
+        });
+        if (!member) {
+          return {
+            isError: true,
+            message: "Failed to destroy your link",
+          };
+        }
+        return {
+          isError: false,
+          message: "Your receiver info will now self destruct",
+        };
+      },
+    ),
 });
