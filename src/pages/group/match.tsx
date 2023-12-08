@@ -198,7 +198,7 @@ export default function Match() {
         >
           <div className="text-center text-white">
             <p className="py-2.5  text-2xl text-white">
-              Add people to you secret santa group
+              Add people to your Secret santa group
             </p>
             <p className="py-2.5 font-light">Randomly assign Secret Santas</p>
           </div>

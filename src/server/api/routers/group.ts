@@ -257,7 +257,7 @@ export const groupRouter = createTRPCRouter({
         }
         return {
           isError: false,
-          message: "A message has been sent to you secret Santa",
+          message: "A message has been sent to your Secret Santa",
         };
       },
     ),
