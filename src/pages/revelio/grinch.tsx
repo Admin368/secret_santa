@@ -36,7 +36,7 @@ function TextDisplay(props: PropsTextDisplay) {
     // </span>,
     <span>
       <br />
-      You group has:
+      Your group has:
       {props.members.map((member, index) => (
         <span key={index}>
           <br />
@@ -58,7 +58,7 @@ function TextDisplay(props: PropsTextDisplay) {
       <br />
       Now, This its a secret,
       <br />
-      No one can know but you,
+      No one can know it,
       <br />
     </span>,
     <span>
@@ -75,7 +75,7 @@ function TextDisplay(props: PropsTextDisplay) {
   const [isSeen, setIsSeen] = useState(false);
   const [index, setIndex] = useState(0);
   // let index = 0;
-
+  const [showText, setShowText] = useState(false);
   const changeText = useCallback(() => {
     const newIndex = index + 1;
     // index++;
@@ -95,11 +95,21 @@ function TextDisplay(props: PropsTextDisplay) {
       }
       //   index = 0;
     }
-    setIndex(newIndex);
-    setText(revealing[newIndex]);
+    setShowText(false);
+    const timeout = setTimeout(() => {
+      setShowText(true);
+      setIndex(newIndex);
+      setText(revealing[newIndex]);
+      clearTimeout(timeout);
+    }, 1000);
     return;
   }, [isSeen, index, props.santa]);
-
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setShowText(true);
+      clearTimeout(timeout);
+    }, 1000);
+  }, []);
   //   useEffect(() => {
   //     const timer = !isSeen && setInterval(changeText, 3000);
   //     return () => clearInterval(timer);
@@ -134,7 +144,8 @@ function TextDisplay(props: PropsTextDisplay) {
     <p
       className=" py-2.5 text-2xl font-bold text-white"
       style={{
-        transition: "2s",
+        opacity: showText ? 1 : 0,
+        transition: "1s ease-in-out",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
