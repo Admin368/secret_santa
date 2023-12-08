@@ -28,7 +28,7 @@ export default function LayoutPage(props: PropsLayoutPage) {
     >
       <Head>
         <title>{`Secret Santa${
-          props.pageTitle && ` - ${props.pageTitle}`
+          props.pageTitle ? ` - ${props.pageTitle}` : ""
         }`}</title>
       </Head>
       <div
@@ -70,13 +70,14 @@ export default function LayoutPage(props: PropsLayoutPage) {
               // bottom: 30,
               fontWeight: 200,
               color: "white",
-              // textAlign: "center",
+              textAlign: "center",
               width: "fit-content",
               whiteSpace: "nowrap",
               alignSelf: "center",
             }}
           >
-            Create your own <strong>Secret Santa</strong> list
+            Create your own{" "}
+            <strong style={{ fontWeight: 800 }}>Secret Santa</strong> list
             <br />
             Santa.Maravian.com
           </p>

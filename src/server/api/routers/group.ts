@@ -265,6 +265,7 @@ export const groupRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.string(),
+        hintsOnly: z.boolean().optional(),
       }),
     )
     .mutation(
@@ -273,8 +274,10 @@ export const groupRouter = createTRPCRouter({
         input,
       }): Promise<
         TypeRes & {
+          santa_name?: string;
           receiver_name?: string;
           members?: string[];
+          hints?: string[];
         }
       > => {
         const santa = await ctx.db.member.findUnique({
@@ -291,12 +294,7 @@ export const groupRouter = createTRPCRouter({
           },
         });
         if (!santa) return { message: "Could not find you", isError: true };
-        if (santa.link_is_seen) {
-          return {
-            message: "We already told you who the santa is",
-            isError: true,
-          };
-        }
+
         if (!santa.receiver_id) {
           return {
             isError: true,
@@ -312,7 +310,30 @@ export const groupRouter = createTRPCRouter({
           return {
             isError: true,
             message:
-              "We could not find your reciever please contact link maker to match again",
+              "We could not find your receiver please contact link maker to match again",
+          };
+        }
+        const hints: string[] = [];
+        if (receiver.hints) {
+          const _hints: string[] = JSON.parse(receiver.hints) as string[];
+          if (Array.isArray(_hints)) {
+            _hints.map((hint) => {
+              hints.push(hint);
+            });
+          }
+        }
+        if (input.hintsOnly) {
+          return {
+            isError: false,
+            message: "Successfully got your hint",
+            santa_name: santa.name,
+            hints,
+          };
+        }
+        if (santa.link_is_seen) {
+          return {
+            message: "We already told you who the santa is",
+            isError: true,
           };
         }
         const members: string[] = [];
