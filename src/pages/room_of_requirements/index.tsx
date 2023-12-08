@@ -1,5 +1,5 @@
 import { LoadingOutlined } from "@ant-design/icons";
-import type { member } from "@prisma/client";
+// import type { member } from "@prisma/client";
 import { useEffect } from "react";
 import { Button } from "~/components/Button";
 import LayoutPage from "~/layouts/LayoutPage";
