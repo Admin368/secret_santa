@@ -4,3 +4,5 @@
 - snow
 - favicon change
 - revelio api
+- footer create your on secret santa group
+- header onclick to home
