@@ -1,10 +1,11 @@
-import type { member } from "@prisma/client";
+import type { group, member } from "@prisma/client";
 import { TRPCClientError } from "@trpc/client";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { shuffle1 } from "./util";
 import { env } from "~/env";
+import { type TypeSendEmail, emailSend } from "~/server/email";
 
 const BASE_URL = process.env.VERCEL_URL ?? env.NEXTAUTH_URL;
 
@@ -383,4 +384,97 @@ export const groupRouter = createTRPCRouter({
         };
       },
     ),
+  email_send: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        type: z.union([z.literal("group"), z.literal("member")]),
+        action: z.union([
+          z.literal("send_santa_receiver_name"),
+          z.literal("notify_hints"),
+        ]),
+      }),
+    )
+    .mutation(async ({ ctx, input }): Promise<TypeRes> => {
+      let memberORgroup: member | group | null = null;
+      switch (input.type) {
+        case "member":
+          memberORgroup = await ctx.db.member.findUnique({
+            where: {
+              id: input.id,
+            },
+          });
+          break;
+        case "group":
+          memberORgroup = await ctx.db.member.findUnique({
+            where: {
+              id: input.id,
+            },
+          });
+          break;
+        default:
+          return {
+            isError: true,
+            message: "Please provide an email action",
+          };
+      }
+
+      if (!memberORgroup) {
+        return {
+          isError: true,
+          message: "Could not find the member",
+        };
+      }
+      // const email_res = emailSend({});
+      let message: TypeSendEmail | undefined = undefined;
+
+      switch (input.action) {
+        case "send_santa_receiver_name":
+          message = {
+            to: memberORgroup.email,
+            subject: "Secret Santa - Reveal",
+            text: "You have been chosen your friend group to be somebody's Secret Santa",
+            html: `
+              <div width="100%">
+                <h1>Secret Santa Reveal</h1>
+                <p>Greetings Santa ${memberORgroup.name},</p>
+                <p>Your friends have submitted you to be part of the secret santa for this year,</p>
+                <p>You have been secretely matched to gift one of your friends,</p>
+                <p>Click the link below to find out whose secret santa you will be!</p>
+                <a href="${memberORgroup.link}" target="_blank">${memberORgroup.link}</a>
+                <iframe src="${BASE_URL}/revelio/prelink?link=${memberORgroup.link}" height="600px" width="600px"></iframe>
+              </div>
+            `,
+          };
+          break;
+        default:
+      }
+      if (input.type === "member" && message) {
+        const email = memberORgroup.email;
+        console.log(`Sending Email to ${email}`);
+        const email_res = await emailSend(message);
+        if (email_res) {
+          return {
+            isError: false,
+            message: `Successfully sent email to ${message.to}`,
+          };
+        } else {
+          return {
+            isError: true,
+            message: `Failed to send email to ${message.to}`,
+          };
+        }
+        console.log(email_res ? "email-success" : "email-failed");
+      }
+      return {
+        isError: true,
+        message: "Finished but email status not confirmed",
+      };
+      // return ctx.db.group.create({
+      //   data: {
+      //     password: String(Math.floor(Math.random() * 5001)),
+      //     is_matched: false,
+      //   },
+      // });
+    }),
 });

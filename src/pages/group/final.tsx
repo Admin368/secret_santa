@@ -26,6 +26,7 @@ export default function final() {
   );
   const memberType = group.data?.members[0];
   const memberAdd = api.group.member_add.useMutation();
+  const emailSend = api.group.email_send.useMutation();
   // const memberSendEmail = api.group.member_add.useMutation();
   // const memberRemove = api.group.member_remove.useMutation();
   // const membersMakeSantas = api.group.members_make_santas.useMutation();
@@ -79,6 +80,24 @@ export default function final() {
       const group_id = args.member?.group_id;
       const member = args.member;
       if (group_id && pwd && member) {
+        console.log("client-send email");
+        emailSend
+          .mutateAsync({
+            id: member.id,
+            type: "member",
+            action: "send_santa_receiver_name",
+          })
+          .then((res) => {
+            console.log(res);
+            if (res.isError) {
+              toast.error(res.message);
+            } else {
+              toast.success(res.message);
+            }
+          })
+          .catch((e) => {
+            console.error(e);
+          });
       }
     },
     [id, group, pwd],
