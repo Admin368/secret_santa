@@ -4,10 +4,10 @@ import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { shuffle1 } from "./util";
-// import { env } from "~/env";
+import { env } from "~/env";
 import { type TypeSendEmail, emailSend } from "~/server/email";
 
-const BASE_URL = process.env.NEXTAUTH_URL;
+const BASE_URL = env.BASE_URL;
 
 interface TypeRes {
   isError: boolean;
