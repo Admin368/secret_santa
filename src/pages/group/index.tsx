@@ -94,12 +94,9 @@ export default function Page() {
       </Modal>
       <div
         style={{
-          // flexGrow: 1,
           display: "flex",
           flexDirection: "column",
-          // border: "1px solid red",
           width: "100%",
-          // height: "fit-content",
           paddingTop: 20,
           gap: 20,
           alignItems: "center",
@@ -114,11 +111,9 @@ export default function Page() {
           text="Create Santa List"
           isInverted
           onClick={async () => {
-            // await handleGroupCreate();
             onModalOpen();
           }}
         />
-        {/* <Input /> */}
       </div>
     </LayoutPage>
   );

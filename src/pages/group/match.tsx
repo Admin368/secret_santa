@@ -1,4 +1,3 @@
-// import { group } from "@prisma/client";
 import { Card, Form, Input, Modal, Spin, Button as AntButton } from "antd/lib";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
@@ -7,6 +6,7 @@ import { Button } from "~/components/Button";
 import CheckAuth from "~/components/CheckAuth";
 import LayoutPage from "~/layouts/LayoutPage";
 import { api } from "~/utils/api";
+import { type member } from "@prisma/client";
 
 export default function Match() {
   // url params
@@ -19,15 +19,12 @@ export default function Match() {
     { id, pwd },
     { enabled: id ? true : false && pwd ? true : false, staleTime: Infinity },
   );
-  const memberType = group.data?.members[0];
   const memberAdd = api.group.member_add.useMutation();
   const memberRemove = api.group.member_remove.useMutation();
   const membersMakeSantas = api.group.members_make_santas.useMutation();
 
   // form
-  const [formAddPerson] = Form.useForm<
-    typeof memberType & { is_edit?: boolean }
-  >();
+  const [formAddPerson] = Form.useForm<member & { is_edit?: boolean }>();
 
   // states
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -35,7 +32,7 @@ export default function Match() {
 
   // functions
   const modalOpen = useCallback(
-    (args: { edit_member?: typeof memberType }) => {
+    (args: { edit_member?: member }) => {
       formAddPerson.resetFields();
       setModalTitle("Add Person");
       if (args.edit_member) {
@@ -164,7 +161,6 @@ export default function Match() {
           setModalIsOpen(false);
         }}
         onOk={() => {
-          // modalOnSubmit();
           formAddPerson.submit();
         }}
         closable={false}
@@ -219,9 +215,7 @@ export default function Match() {
             <p className="py-2.5 font-light">Randomly assign Secret Santas</p>
           </div>
           <div
-            // className="h-75 w-75 flex flex-col rounded-md border text-black"
             style={{
-              //   width: "300px",
               width: "100%",
               borderRadius: 5,
               flex: 1,
@@ -235,7 +229,6 @@ export default function Match() {
           >
             <div
               style={{
-                // flex: 1,
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
@@ -245,7 +238,6 @@ export default function Match() {
                 maxHeight: "50vh",
                 overflow: "auto",
                 gap: 5,
-                // border: `1px solid white`,
               }}
             >
               {group.data?.members && group.data?.members?.length > 0 ? (

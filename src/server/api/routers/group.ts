@@ -36,7 +36,6 @@ export function returnFormatEmailRevealReceiver(args: {
 }
 
 export function returnFormatEmailHintToSanta(args: {
-  // santa_id: string;
   santa: member;
   base_url: string;
   group: group;
@@ -266,7 +265,6 @@ export const groupRouter = createTRPCRouter({
               is_matched: true,
             },
           });
-          // return assignedMembers;
 
           // SEND EMAILS
           const failedEmails: string[] = [];
@@ -310,7 +308,6 @@ export const groupRouter = createTRPCRouter({
               )}`,
             };
           }
-          // return true;
         } else {
           throw new TRPCClientError("Group or members not found");
         }
@@ -432,7 +429,6 @@ export const groupRouter = createTRPCRouter({
         const santa = await ctx.db.member.findUnique({
           where: {
             id: input.id,
-            // receiver_id: input.id,
           },
           include: {
             group: {
@@ -536,7 +532,6 @@ export const groupRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.string(),
-        // type: z.union([z.literal("group"), z.literal("member")]),
         action: z.union([
           z.literal("send_santa_receiver_name"),
           z.literal("send_all_santas_receiver_name"),
@@ -544,24 +539,6 @@ export const groupRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }): Promise<TypeRes> => {
-      // let memberORgroup: member | group | null = null;
-      // switch (input.type) {
-      //   case "member":
-      //     memberORgroup = await ctx.db.member.findUnique({
-      //       where: {
-      //         id: input.id,
-      //       },
-      //       include: {
-      //         group: true
-      //       }
-      //     });
-      //     break;
-      //   default:
-      //     return {
-      //       isError: true,
-      //       message: "Please provide an email action",
-      //     };
-      // }
       const member = await ctx.db.member.findUnique({
         where: {
           id: input.id,
@@ -577,7 +554,6 @@ export const groupRouter = createTRPCRouter({
           message: "Could not find the member",
         };
       }
-      // const email_res = emailSend({});
       let message: TypeSendEmail | undefined = undefined;
 
       switch (input.action) {
@@ -630,18 +606,11 @@ export const groupRouter = createTRPCRouter({
             message: `Failed to send email to ${message.to}`,
           };
         }
-        // console.log(email_res ? "email-success" : "email-failed");
       }
       return {
         isError: true,
         message: "Finished but email status not confirmed",
       };
-      // return ctx.db.group.create({
-      //   data: {
-      //     password: String(Math.floor(Math.random() * 5001)),
-      //     is_matched: false,
-      //   },
-      // });
     }),
   email_send_all: publicProcedure
     .input(

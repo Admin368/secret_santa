@@ -21,8 +21,6 @@ export default function Logo(props: PropsLogo) {
       type="text"
       onClick={async () => {
         await router.push("/");
-        // window.location = "/"
-        // window.location.replace("/");
       }}
       style={{
         height: "fit-content",

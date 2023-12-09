@@ -1,4 +1,3 @@
-// import Input from "antd/lib/input";
 import { useRecoilValue } from "recoil";
 import { stateColor } from "~/states";
 import AntButton from "antd/lib/button";
@@ -42,12 +41,6 @@ export function Button(props: ButtonProps) {
           } else {
             console.error(`Please give your Buttons id props`);
           }
-          // if(props.menuOptions[keyPath].)
-          // switch(key) {
-          //   case '':
-          //     beak
-          //   default:
-          // }
         }}
       />
     );
@@ -58,23 +51,17 @@ export function Button(props: ButtonProps) {
       loading={props.isLoading}
       onClick={props.onClick}
       style={{
-        // padding: 10,
         width: props.width ?? "fit-content",
         minWidth: "180px",
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         color: props.isInverted ? color : "white",
         backgroundColor: props.isInverted ? "white" : "transparent",
-        // border: "1px solid white",
-        // borderRadius: 10,
         display: "flex",
-        // flexDirection: "column",
         height: "fit-content",
         minHeight: 40,
         alignItems: "center",
         justifyContent: "center",
       }}
     >
-      {/* <Input /> */}
       <div
         style={{
           width: "100%",

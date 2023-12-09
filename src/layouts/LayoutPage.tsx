@@ -11,13 +11,11 @@ interface PropsLayoutPage {
 export default function LayoutPage(props: PropsLayoutPage) {
   const router = useRouter();
   return (
-    // <div className="container flex flex-col items-center justify-start text-center text-white">
     <div
       className="flex text-white"
       style={{
         display: "flex",
         flexDirection: "column",
-        // border: "10px solid black",
         width: "100%",
         minHeight: "100dvh",
         alignItems: "center",
@@ -30,24 +28,24 @@ export default function LayoutPage(props: PropsLayoutPage) {
         <title>{`Secret Santa${
           props.pageTitle ? ` - ${props.pageTitle}` : ""
         }`}</title>
+        <meta
+          name="description"
+          content="Randomly assign Secret Santas with your friends"
+        />
       </Head>
       <div
         className="text-center font-extrabold"
         style={{
-          //   border: `1px solid white`,
           maxWidth: 1200,
           minWidth: 320,
           width: "100%",
-          // height: props.isFullHeight ? "100%" : undefined,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           flex: 1,
           flexDirection: "column",
           padding: 20,
-          // transition: "1s",
           transition: `background-color 0.5s ease`,
-          //   overflow: "hidden",
           position: "relative",
         }}
       >
@@ -65,9 +63,7 @@ export default function LayoutPage(props: PropsLayoutPage) {
         {router.pathname !== "/" ? (
           <p
             style={{
-              // position: "absolute",
               padding: 10,
-              // bottom: 30,
               fontWeight: 200,
               color: "white",
               textAlign: "center",
