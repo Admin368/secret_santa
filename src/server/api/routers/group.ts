@@ -13,6 +13,24 @@ interface TypeRes {
   isError: boolean;
   message: string;
 }
+
+export function returnFormatEmailRevealReceiver(args: {
+  santa_name: string;
+  receiver_reveal_link: string;
+  base_url: string;
+}): string {
+  return `
+  <div width="100%">
+    <h1>Secret Santa Reveal</h1>
+    <p>Greetings Santa ${args.santa_name},</p>
+    <p>Your friends have submitted you to be part of the secret santa for this year,</p>
+    <p>You have been secretely matched to gift one of your friends,</p>
+    <p>Click the link below to find out whose secret santa you will be!</p>
+    <a href="${args.receiver_reveal_link}" target="_blank">${args.receiver_reveal_link}</a>
+    <iframe src="${args.base_url}/revelio/prelink?link=${args.receiver_reveal_link}" height="600px" width="600px"></iframe>
+  </div>
+`;
+}
 export const groupRouter = createTRPCRouter({
   test: publicProcedure.query(() => {
     return {
@@ -430,21 +448,22 @@ export const groupRouter = createTRPCRouter({
 
       switch (input.action) {
         case "send_santa_receiver_name":
+          if (!memberORgroup.link) {
+            return {
+              isError: true,
+              message:
+                "You have no reveal link, please contact admin or link maker to match again",
+            };
+          }
           message = {
             to: memberORgroup.email,
             subject: "Secret Santa - Reveal",
             text: "You have been chosen your friend group to be somebody's Secret Santa",
-            html: `
-              <div width="100%">
-                <h1>Secret Santa Reveal</h1>
-                <p>Greetings Santa ${memberORgroup.name},</p>
-                <p>Your friends have submitted you to be part of the secret santa for this year,</p>
-                <p>You have been secretely matched to gift one of your friends,</p>
-                <p>Click the link below to find out whose secret santa you will be!</p>
-                <a href="${memberORgroup.link}" target="_blank">${memberORgroup.link}</a>
-                <iframe src="${BASE_URL}/revelio/prelink?link=${memberORgroup.link}" height="600px" width="600px"></iframe>
-              </div>
-            `,
+            html: returnFormatEmailRevealReceiver({
+              santa_name: memberORgroup.name,
+              receiver_reveal_link: memberORgroup.link,
+              base_url: BASE_URL,
+            }),
           };
           break;
         default:
