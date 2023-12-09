@@ -82,6 +82,7 @@ export default function final() {
       const member = args.member;
       if (group_id && pwd && member) {
         console.log("client-send email");
+        toast.info("Resending Email");
         emailSend
           .mutateAsync({
             id: member.id,

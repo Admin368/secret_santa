@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import { env } from "~/env";
 
 export interface TypeSendEmail {
   // from?: string,
@@ -7,18 +8,10 @@ export interface TypeSendEmail {
   text: string;
   html?: string;
 }
-// const sampleMailOptions = {
-//   from: "santa@maravianwebservices.com",
-//   to: "paulkachule@hotmail.com",
-//   subject: "Sending Email using Node.js",
-//   text: "That was easy!",
-// };
 export async function emailSend(args: TypeSendEmail) {
   const mailOptions: TypeSendEmail & {
     from: { name: string; address: string };
   } = {
-    // from: "Secret Santa Matcher",
-    // from: "santa@maravianwebservices.com",
     from: {
       name: "Secret Santa",
       address: "santa@maravianwebservices.com",
@@ -30,18 +23,12 @@ export async function emailSend(args: TypeSendEmail) {
   };
   const transporter = nodemailer.createTransport({
     name: "Secret Santa",
-    host: "mail.maravianwebservices.com",
-    // host: "10.16.86.122",
-    // host: "maravianwebservices.com",
-    // host: "md-hk-8.webhostbox.net",
-
-    // port: 587,
-    // secure: false,
-    port: 465,
+    host: env.EMAIL_HOST,
+    port: env.EMAIL_PORT,
     secure: true,
     auth: {
-      user: "santa@maravianwebservices.com",
-      pass: "79dUxGl#)B)q",
+      user: env.EMAIL_USER,
+      pass: env.EMAIL_PASSWORD,
     },
     // tls: {
     //   servername: "mail.maravianwebservices.com",
@@ -50,8 +37,8 @@ export async function emailSend(args: TypeSendEmail) {
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log(info);
-    console.log(`Message sent: ${info.messageId}`);
+    // console.log(info);
+    // console.log(`Message sent: ${info.messageId}`);
     if (info.accepted) return true;
   } catch (error) {
     console.error(error);
