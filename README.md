@@ -1,7 +1,7 @@
-# 🎅🎁🎄 Secret Santa 🎄🎁🎅
+# 🎅🎁🎄 React Secret Santa 🎄🎁🎅
 
 ## Introduction
-Welcome to **Secret Santa**, a web application that allows you to organize a Secret Santa gift exchange with your friends, family, or colleagues. The application is built using TypeScript with Next.js framework, nodemailer, Ant Design, Tailwind, Prisma ORM, and TRPC.
+Welcome to **Secret Santa**, a web application that allows you to organize a Secret Santa gift exchange with your friends, family, or colleagues. The application is built using React written in TypeScript (Javascript) with Next.js framework, nodemailer, Ant Design, Tailwind, Prisma ORM, and TRPC.
 The structure of the application was bootstrapped with `create-t3-app`.
 
 ## Features
