@@ -20,7 +20,7 @@ export default function Page() {
       });
   }
   return (
-    <LayoutPage>
+    <LayoutPage pageTitle="Group">
       <div
         style={{
           // flexGrow: 1,

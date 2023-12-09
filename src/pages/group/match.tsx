@@ -146,7 +146,7 @@ export default function Match() {
     }
   }, [group.data, router]);
   return (
-    <LayoutPage>
+    <LayoutPage pageTitle="Group - Match">
       <CheckAuth />
       <Modal
         open={modalIsOpen}
