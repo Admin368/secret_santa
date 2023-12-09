@@ -125,7 +125,7 @@ export const groupRouter = createTRPCRouter({
     .input(z.object({ group_id: z.string().min(1) }))
     .input(z.object({ pwd: z.string().min(1) }))
     .input(z.object({ is_rematch: z.boolean().optional() }))
-    .mutation(async ({ ctx, input }) => {
+    .mutation(async ({ ctx, input }): Promise<TypeRes> => {
       const group = await ctx.db.group.findUnique({
         where: {
           id: input.group_id,
@@ -199,7 +199,45 @@ export const groupRouter = createTRPCRouter({
           },
         });
         // return assignedMembers;
-        return true;
+
+        // SEND EMAILS
+        const failedEmails: string[] = [];
+        assignedMembers.map(async (assignedMember) => {
+          if (assignedMember.link) {
+            const message: TypeSendEmail = {
+              to: assignedMember.email,
+              subject: "Secret Santa - Reveal",
+              text: "You have been chosen your friend group to be somebody's Secret Santa",
+              html: returnFormatEmailRevealReceiver({
+                santa_name: assignedMember.name,
+                receiver_reveal_link: assignedMember.link,
+                base_url: BASE_URL,
+              }),
+            };
+            const email_res = await emailSend(message);
+            if (!email_res) {
+              failedEmails.push(assignedMember.email);
+            }
+          } else {
+            console.error(`Reveal Links not generated`);
+            failedEmails.push(assignedMember.email);
+          }
+        });
+
+        if (failedEmails.length > 0) {
+          return {
+            isError: false,
+            message: `Successfully sent email to ${JSON.stringify(
+              failedEmails,
+            )}`,
+          };
+        } else {
+          return {
+            isError: true,
+            message: `Failed to send email to santas`,
+          };
+        }
+        // return true;
       } else {
         throw new TRPCClientError("Group or members not found");
       }
