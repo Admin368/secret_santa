@@ -17,6 +17,7 @@ import {
   stateColors,
 } from "~/states";
 import { ToastContainer } from "react-toastify";
+import { Snow } from "~/components/Snow";
 
 function ColorChanger() {
   const color = useRecoilValue(stateColor);
@@ -59,6 +60,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
         />
         <ColorChanger />
         <ConfigProvider theme={theme}>
+          <Snow />
           <Analytics />
           <Component {...pageProps} />
         </ConfigProvider>
