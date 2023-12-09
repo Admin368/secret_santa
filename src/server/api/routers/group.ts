@@ -589,16 +589,6 @@ export const groupRouter = createTRPCRouter({
                 "You have no reveal link, please contact admin or link maker to match again",
             };
           }
-          if (member.link_is_seen === true) {
-            await ctx.db.member.update({
-              where: {
-                id: member.id,
-              },
-              data: {
-                link_is_seen: false,
-              },
-            });
-          }
           message = {
             to: member.email,
             subject: `Secret Santa - ${member.group.name} - Reveal`,
@@ -618,6 +608,18 @@ export const groupRouter = createTRPCRouter({
         console.log(`Sending Email to ${email}`);
         const email_res = await emailSend(message);
         if (email_res) {
+          if (input.action === "send_santa_receiver_name") {
+            if (member.link_is_seen === true) {
+              await ctx.db.member.update({
+                where: {
+                  id: member.id,
+                },
+                data: {
+                  link_is_seen: false,
+                },
+              });
+            }
+          }
           return {
             isError: false,
             message: `Successfully sent email to ${message.to}`,
