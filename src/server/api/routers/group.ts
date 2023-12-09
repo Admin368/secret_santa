@@ -125,123 +125,134 @@ export const groupRouter = createTRPCRouter({
     .input(z.object({ group_id: z.string().min(1) }))
     .input(z.object({ pwd: z.string().min(1) }))
     .input(z.object({ is_rematch: z.boolean().optional() }))
-    .mutation(async ({ ctx, input }): Promise<TypeRes> => {
-      const group = await ctx.db.group.findUnique({
-        where: {
-          id: input.group_id,
-        },
-        include: {
-          members: true,
-        },
-      });
-      const members = group?.members;
-      if (group && members) {
-        function secretSanta(users: member[]) {
-          const shuffledUsers = shuffle1(users) as unknown as member[];
-          const assignments = [];
+    .mutation(
+      async ({ ctx, input }): Promise<TypeRes & { is_matched?: boolean }> => {
+        const group = await ctx.db.group.findUnique({
+          where: {
+            id: input.group_id,
+          },
+          include: {
+            members: true,
+          },
+        });
+        const members = group?.members;
+        if (group && members) {
+          function secretSanta(users: member[]) {
+            const shuffledUsers = shuffle1(users) as unknown as member[];
+            const assignments = [];
 
-          for (let i = 0; i < shuffledUsers.length; i++) {
-            const currentUser = shuffledUsers[i];
-            const nextUser = shuffledUsers[(i + 1) % shuffledUsers.length];
-            if (currentUser && nextUser) {
-              assignments.push({
-                giver: currentUser,
-                receiver: nextUser,
-              });
+            for (let i = 0; i < shuffledUsers.length; i++) {
+              const currentUser = shuffledUsers[i];
+              const nextUser = shuffledUsers[(i + 1) % shuffledUsers.length];
+              if (currentUser && nextUser) {
+                assignments.push({
+                  giver: currentUser,
+                  receiver: nextUser,
+                });
+              }
             }
-          }
 
-          return assignments;
-        }
-        const assignedMembers: member[] = [];
-        const assignments = secretSanta(members);
-        if (input.is_rematch && group.is_matched) {
+            return assignments;
+          }
+          const assignedMembers: member[] = [];
+          const assignments = secretSanta(members);
+          if (input.is_rematch && group.is_matched) {
+            await Promise.all(
+              assignments.map(async ({ giver }) => {
+                await ctx.db.member.update({
+                  where: {
+                    id: giver.id,
+                  },
+                  data: {
+                    receiver_id: null,
+                    link: null,
+                    link_is_seen: false,
+                  },
+                });
+              }),
+            );
+          }
           await Promise.all(
-            assignments.map(async ({ giver }) => {
-              await ctx.db.member.update({
+            assignments.map(async ({ giver, receiver }) => {
+              const assignedMember = await ctx.db.member.update({
                 where: {
                   id: giver.id,
                 },
                 data: {
-                  receiver_id: null,
-                  link: null,
+                  receiver_id: receiver.id,
+                  link: `${BASE_URL}/revelio?id=${giver.id}`,
                   link_is_seen: false,
                 },
               });
+              if (assignedMember) {
+                assignedMembers.push(assignedMember);
+              }
             }),
           );
-        }
-        await Promise.all(
-          assignments.map(async ({ giver, receiver }) => {
-            const assignedMember = await ctx.db.member.update({
-              where: {
-                id: giver.id,
-              },
-              data: {
-                receiver_id: receiver.id,
-                link: `${BASE_URL}/revelio?id=${giver.id}`,
-                link_is_seen: false,
-              },
-            });
-            if (assignedMember) {
-              assignedMembers.push(assignedMember);
-            }
-          }),
-        );
-
-        // update is matched
-        await ctx.db.group.update({
-          where: {
-            id: input.group_id,
-          },
-          data: {
-            is_matched: true,
-          },
-        });
-        // return assignedMembers;
-
-        // SEND EMAILS
-        const failedEmails: string[] = [];
-        assignedMembers.map(async (assignedMember) => {
-          if (assignedMember.link) {
-            const message: TypeSendEmail = {
-              to: assignedMember.email,
-              subject: "Secret Santa - Reveal",
-              text: "You have been chosen your friend group to be somebody's Secret Santa",
-              html: returnFormatEmailRevealReceiver({
-                santa_name: assignedMember.name,
-                receiver_reveal_link: assignedMember.link,
-                base_url: BASE_URL,
-              }),
+          if (assignedMembers.length < 1) {
+            return {
+              isError: true,
+              message: "No matching was done",
             };
-            const email_res = await emailSend(message);
-            if (!email_res) {
-              failedEmails.push(assignedMember.email);
-            }
-          } else {
-            console.error(`Reveal Links not generated`);
-            failedEmails.push(assignedMember.email);
           }
-        });
+          // update is matched
+          await ctx.db.group.update({
+            where: {
+              id: input.group_id,
+            },
+            data: {
+              is_matched: true,
+            },
+          });
+          // return assignedMembers;
 
-        if (failedEmails.length > 0) {
-          return {
-            isError: false,
-            message: `Successfully sent email to ${JSON.stringify(
-              failedEmails,
-            )}`,
-          };
+          // SEND EMAILS
+          const failedEmails: string[] = [];
+          await Promise.all(
+            assignedMembers.map(async (assignedMember) => {
+              if (assignedMember.link) {
+                const message: TypeSendEmail = {
+                  to: assignedMember.email,
+                  subject: "Secret Santa - Reveal",
+                  text: "You have been chosen your friend group to be somebody's Secret Santa",
+                  html: returnFormatEmailRevealReceiver({
+                    santa_name: assignedMember.name,
+                    receiver_reveal_link: assignedMember.link,
+                    base_url: BASE_URL,
+                  }),
+                };
+                const email_res = await emailSend(message);
+                if (!email_res) {
+                  failedEmails.push(assignedMember.email);
+                }
+              } else {
+                console.error(`Reveal Links not generated`);
+                failedEmails.push(assignedMember.email);
+              }
+            }),
+          );
+
+          if (failedEmails.length < 1) {
+            return {
+              isError: false,
+              is_matched: true,
+              message: `Successfully matched sent emails to all Santas`,
+            };
+          } else {
+            return {
+              isError: true,
+              is_matched: true,
+              message: `Successfully matched but failed to send emails to ${JSON.stringify(
+                failedEmails,
+              )}`,
+            };
+          }
+          // return true;
         } else {
-          return {
-            isError: true,
-            message: `Failed to send email to santas`,
-          };
+          throw new TRPCClientError("Group or members not found");
         }
-        // return true;
-      } else {
-        throw new TRPCClientError("Group or members not found");
-      }
-    }),
+      },
+    ),
   member_get: publicProcedure
     .input(z.object({ id: z.string().min(1) }))
     .query(({ ctx, input }) => {

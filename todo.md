@@ -2,7 +2,7 @@
 - link creation based on root url {cm:2023-12-08}
 - revelio link expires after seen {cm:2023-12-09}
 - snow
-- email sending
+- email sending {cm:2023-12-09}
 - favicon change {cm:2023-12-08}
 - revelio api {cm:2023-12-08}
 - footer create your on secret santa group {cm:2023-12-09}
@@ -12,3 +12,4 @@
 - fading in revelio info {cm:2023-12-09}
 - prelink for email {cm:2023-12-09}
 - hint link for email {cm:2023-12-09}
+- group names

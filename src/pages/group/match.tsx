@@ -113,6 +113,14 @@ export default function Match() {
           toast.error(`Please have atleast 3 people`);
           return;
         }
+        toast.info(`Matching and Emailing Santas`);
+        async function onMatch() {
+          await router.push({
+            pathname: "/group/final",
+            query: { id, pwd },
+          });
+          await group.refetch();
+        }
         membersMakeSantas
           .mutateAsync({
             group_id,
@@ -120,13 +128,14 @@ export default function Match() {
             is_rematch: args.is_rematch,
           })
           .then(async (res) => {
-            if (res === true) {
-              toast.success(`Successfully assigned santa`);
-              await router.push({
-                pathname: "/group/final",
-                query: { id, pwd },
-              });
-              await group.refetch();
+            if (!res.isError === true) {
+              toast.success(res.message ?? `Successfully assigned santa`);
+              await onMatch();
+            } else {
+              toast.error(res.message);
+              if (res.is_matched) {
+                await onMatch();
+              }
             }
           })
           .catch((e) => {
