@@ -7,7 +7,7 @@ import { shuffle1 } from "./util";
 import { env } from "~/env";
 import { type TypeSendEmail, emailSend } from "~/server/email";
 
-const BASE_URL = process.env.VERCEL_URL ?? env.NEXTAUTH_URL;
+const BASE_URL = env.NEXTAUTH_URL;
 
 interface TypeRes {
   isError: boolean;
