@@ -41,4 +41,4 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 - [TRPC](https://trpc.io/)
 - [Create T3 App](https://create.t3.gg/)
 
-🎁🎄🎅 Happy Holidays! 🎅🎄🎁
+# 🎁🎄🎅 Happy Holidays! 🎅🎄🎁
