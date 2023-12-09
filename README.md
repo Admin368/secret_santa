@@ -1,4 +1,4 @@
-🎅🎁🎄 **Secret Santa** 🎄🎁🎅
+# 🎅🎁🎄 Secret Santa 🎄🎁🎅
 
 ## Introduction
 Welcome to **Secret Santa**, a web application that allows you to organize a Secret Santa gift exchange with your friends, family, or colleagues. The application is built using TypeScript with Next.js framework, nodemailer, Ant Design, Tailwind, Prisma ORM, and TRPC.
@@ -41,4 +41,4 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 - [TRPC](https://trpc.io/)
 - [Create T3 App](https://create.t3.gg/)
 
-🎁🎄🎅 Happy Holidays! 🎅🎄🎁
+# 🎁🎄🎅 Happy Holidays! 🎅🎄🎁
