@@ -1,5 +1,5 @@
 // import { group } from "@prisma/client";
-import { Card, Form, Input, Modal, Spin } from "antd/lib";
+import { Card, Form, Input, Modal, Spin, Button as AntButton } from "antd/lib";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -183,7 +183,11 @@ export default function Match() {
             <Form.Item name="id" label="id" hidden>
               <Input disabled />
             </Form.Item>
-            <Form.Item name="name" label="Name" rules={[{ required: true }]}>
+            <Form.Item
+              name="name"
+              label="Name"
+              rules={[{ required: true, max: 15 }]}
+            >
               <Input />
             </Form.Item>
             <Form.Item
@@ -192,6 +196,9 @@ export default function Match() {
               rules={[{ required: true, type: "email" }]}
             >
               <Input />
+            </Form.Item>
+            <Form.Item hidden>
+              <AntButton htmlType="submit">Submit</AntButton>
             </Form.Item>
           </Form>
         </Card>
@@ -207,7 +214,7 @@ export default function Match() {
         >
           <div className="text-center text-white">
             <p className="py-2.5  text-2xl text-white">
-              Add people to your Secret santa group
+              Add people to your Secret Santa group
             </p>
             <p className="py-2.5 font-light">Randomly assign Secret Santas</p>
           </div>

@@ -18,15 +18,18 @@ export function returnFormatEmailRevealReceiver(args: {
   santa_name: string;
   receiver_reveal_link: string;
   base_url: string;
+  group: group;
 }): string {
   return `
   <div width="100%">
-    <h1>Secret Santa Reveal</h1>
-    <p>Greetings Santa ${args.santa_name},</p>
-    <p>Your friends have submitted you to be part of the secret santa for this year,</p>
-    <p>You have been secretely matched to gift one of your friends,</p>
-    <p>Click the link below to find out whose secret santa you will be!</p>
+    <h1>Secret Santa - ${args.group.name} - Reveal</h1>
+    <p>
+    Greetings Santa <strong>${args.santa_name}</strong>,<br/>
+    Your friends have submitted you to be part of the ${args.group.name} secret santa for this year,<br/>
+    You have been secretely matched to gift one of your friends,<br/>
+    Click the link below to find out whose secret santa you will be!<br/>
     <a href="${args.receiver_reveal_link}" target="_blank">${args.receiver_reveal_link}</a>
+    </p>
     <iframe src="${args.base_url}/revelio/prelink?link=${args.receiver_reveal_link}" height="600px" width="600px"></iframe>
   </div>
 `;
@@ -36,16 +39,19 @@ export function returnFormatEmailHintToSanta(args: {
   // santa_id: string;
   santa: member;
   base_url: string;
+  group: group;
 }): string {
   const hints_link = `${args.base_url}/room_of_requirements?id=${args.santa.id}`;
   return `
   <div width="100%">
-    <h1>Secret Santa Hint</h1>
-    <p>Greetings Santa ${args.santa.name},</p>
-    <p>Your receiver has sent you some hint of what they want for christmas,</p>
-    <p>Hopefully these help you in choosing your gift for them,</p>
-    <p>Click the link below to see the hints!</p>
+    <h1>Secret Santa - ${args.group.name} - Hint</h1>
+    <p>
+    Greetings Santa <strong>${args.santa.name}</strong>,<br/>
+    Your receiver has sent you some hints of what they want for christmas,<br/>
+    Hopefully these help you in choosing your gift for them,<br/>
+    Click the link below to see the hints!<br/>
     <a href="${hints_link}" target="_blank">${hints_link}</a>
+    </p>
     <iframe src="/revelio/prelink?link=${hints_link}" height="600px" width="600px"></iframe>
   </div>
 `;
@@ -56,14 +62,17 @@ export const groupRouter = createTRPCRouter({
       greeting: `Hello`,
     };
   }),
-  create: publicProcedure.mutation(async ({ ctx }) => {
-    return ctx.db.group.create({
-      data: {
-        password: String(Math.floor(Math.random() * 5001)),
-        is_matched: false,
-      },
-    });
-  }),
+  create: publicProcedure
+    .input(z.object({ name: z.string().min(1) }))
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.group.create({
+        data: {
+          name: input.name,
+          password: String(Math.floor(Math.random() * 5001)),
+          is_matched: false,
+        },
+      });
+    }),
   get: publicProcedure
     .input(z.object({ id: z.string().min(1) }))
     .input(z.object({ pwd: z.string().min(1) }))
@@ -78,6 +87,40 @@ export const groupRouter = createTRPCRouter({
         },
       });
     }),
+  get_name: publicProcedure
+    .input(z.object({ id: z.string().min(1) }))
+    .input(z.object({ is_member_id: z.boolean().optional() }))
+    .query(
+      async ({ ctx, input }): Promise<TypeRes & { group_name?: string }> => {
+        const group = input.is_member_id
+          ? await ctx.db.member
+              .findUnique({
+                where: {
+                  id: input.id,
+                },
+                include: {
+                  group: true,
+                },
+              })
+              .then((res) => res?.group)
+          : await ctx.db.group.findUnique({
+              where: {
+                id: input.id,
+              },
+            });
+        if (!group) {
+          return {
+            isError: true,
+            message: `Could not find the group`,
+          };
+        }
+        return {
+          isError: false,
+          message: `We found ${group.name}`,
+          group_name: group.name,
+        };
+      },
+    ),
   auth: publicProcedure
     .input(
       z.object({
@@ -232,12 +275,13 @@ export const groupRouter = createTRPCRouter({
               if (assignedMember.link) {
                 const message: TypeSendEmail = {
                   to: assignedMember.email,
-                  subject: "Secret Santa - Reveal",
+                  subject: `Secret Santa - ${group.name} - Reveal`,
                   text: "You have been chosen your friend group to be somebody's Secret Santa",
                   html: returnFormatEmailRevealReceiver({
                     santa_name: assignedMember.name,
                     receiver_reveal_link: assignedMember.link,
                     base_url: BASE_URL,
+                    group,
                   }),
                 };
                 const email_res = await emailSend(message);
@@ -324,6 +368,7 @@ export const groupRouter = createTRPCRouter({
           where: {
             receiver_id: receiver.id,
           },
+          include: { group: true },
         });
         if (!santa) {
           return {
@@ -344,11 +389,12 @@ export const groupRouter = createTRPCRouter({
         }
         const message: TypeSendEmail = {
           to: santa.email,
-          subject: "Secret Santa - Hints",
+          subject: `Secret Santa - ${santa.group.name} - Hints`,
           text: "Your receiver sent you hints",
           html: returnFormatEmailHintToSanta({
             santa,
             base_url: BASE_URL,
+            group: santa.group,
           }),
         };
         const email_res = await emailSend(message);
@@ -490,7 +536,7 @@ export const groupRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.string(),
-        type: z.union([z.literal("group"), z.literal("member")]),
+        // type: z.union([z.literal("group"), z.literal("member")]),
         action: z.union([
           z.literal("send_santa_receiver_name"),
           z.literal("send_all_santas_receiver_name"),
@@ -498,23 +544,34 @@ export const groupRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }): Promise<TypeRes> => {
-      let memberORgroup: member | group | null = null;
-      switch (input.type) {
-        case "member":
-          memberORgroup = await ctx.db.member.findUnique({
-            where: {
-              id: input.id,
-            },
-          });
-          break;
-        default:
-          return {
-            isError: true,
-            message: "Please provide an email action",
-          };
-      }
+      // let memberORgroup: member | group | null = null;
+      // switch (input.type) {
+      //   case "member":
+      //     memberORgroup = await ctx.db.member.findUnique({
+      //       where: {
+      //         id: input.id,
+      //       },
+      //       include: {
+      //         group: true
+      //       }
+      //     });
+      //     break;
+      //   default:
+      //     return {
+      //       isError: true,
+      //       message: "Please provide an email action",
+      //     };
+      // }
+      const member = await ctx.db.member.findUnique({
+        where: {
+          id: input.id,
+        },
+        include: {
+          group: true,
+        },
+      });
 
-      if (!memberORgroup) {
+      if (!member) {
         return {
           isError: true,
           message: "Could not find the member",
@@ -525,28 +582,39 @@ export const groupRouter = createTRPCRouter({
 
       switch (input.action) {
         case "send_santa_receiver_name":
-          if (!memberORgroup.link) {
+          if (!member.link) {
             return {
               isError: true,
               message:
                 "You have no reveal link, please contact admin or link maker to match again",
             };
           }
+          if (member.link_is_seen === true) {
+            await ctx.db.member.update({
+              where: {
+                id: member.id,
+              },
+              data: {
+                link_is_seen: false,
+              },
+            });
+          }
           message = {
-            to: memberORgroup.email,
-            subject: "Secret Santa - Reveal",
+            to: member.email,
+            subject: `Secret Santa - ${member.group.name} - Reveal`,
             text: "You have been chosen your friend group to be somebody's Secret Santa",
             html: returnFormatEmailRevealReceiver({
-              santa_name: memberORgroup.name,
-              receiver_reveal_link: memberORgroup.link,
+              santa_name: member.name,
+              receiver_reveal_link: member.link,
               base_url: BASE_URL,
+              group: member.group,
             }),
           };
           break;
         default:
       }
-      if (input.type === "member" && message) {
-        const email = memberORgroup.email;
+      if (message) {
+        const email = member.email;
         console.log(`Sending Email to ${email}`);
         const email_res = await emailSend(message);
         if (email_res) {
@@ -617,12 +685,13 @@ export const groupRouter = createTRPCRouter({
               }
               const message: TypeSendEmail = {
                 to: member.email,
-                subject: "Secret Santa - Reveal",
+                subject: `Secret Santa - ${group.name} - Reveal`,
                 text: "You have been chosen your friend group to be somebody's Secret Santa",
                 html: returnFormatEmailRevealReceiver({
                   santa_name: member.name,
                   receiver_reveal_link: member.link,
                   base_url: BASE_URL,
+                  group,
                 }),
               };
               const email_res = await emailSend(message);

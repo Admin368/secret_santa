@@ -19,7 +19,7 @@ export default function LayoutPage(props: PropsLayoutPage) {
         flexDirection: "column",
         // border: "10px solid black",
         width: "100%",
-        height: "100dvh",
+        minHeight: "100dvh",
         alignItems: "center",
         justifyContent: "center",
         position: "relative",

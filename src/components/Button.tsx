@@ -2,7 +2,7 @@
 import { useRecoilValue } from "recoil";
 import { stateColor } from "~/states";
 import AntButton from "antd/lib/button";
-import { MenuOutlined } from "@ant-design/icons";
+import { CheckOutlined, MenuOutlined } from "@ant-design/icons";
 import { Menu, Popover } from "antd/lib";
 import { useState } from "react";
 export interface ButtonProps {
@@ -19,6 +19,7 @@ export interface ButtonProps {
     label: string;
     onClick: (args: { id: string }) => void;
   }[];
+  isSeen?: boolean;
 }
 
 export function Button(props: ButtonProps) {
@@ -82,9 +83,21 @@ export function Button(props: ButtonProps) {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
+          overflow: "hidden",
         }}
       >
-        <span style={{ fontWeight: "900" }}>{props.text}</span>
+        <span
+          style={{
+            fontWeight: "900",
+            display: "flex",
+            gap: 5,
+          }}
+        >
+          {props.text}
+          {props.isSeen === true ? (
+            <CheckOutlined style={{ fontSize: 12, opacity: 0.7, color }} />
+          ) : null}
+        </span>
         <span>{props.subText}</span>
       </div>
       {props.menuOptions ? (

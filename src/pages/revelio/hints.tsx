@@ -1,6 +1,6 @@
 // import { group } from "@prisma/client";
 // import { LoadingOutlined } from "@ant-design/icons";
-import { Card, Form, Input, Modal, Spin } from "antd/lib";
+import { Card, Form, Input, Modal, Spin, Button as AntButton } from "antd/lib";
 import { useRouter } from "next/router";
 import { useCallback, useState, useEffect } from "react";
 import { toast } from "react-toastify";
@@ -46,7 +46,7 @@ export default function Hints() {
     const formValues = formAddHint.getFieldsValue();
     const hints_ = hints;
     if (hints.length >= 4) {
-      toast.info(`You can only give 5 hints`);
+      toast.info(`You can only give 4 hints`);
       return;
     }
     hints_.push(formValues.hint);
@@ -142,7 +142,7 @@ export default function Hints() {
         }}
         okButtonProps={{
           type: "primary",
-          color: "red",
+          // color: "red",
         }}
         onOk={() => {
           // modalOnSubmit();
@@ -150,7 +150,10 @@ export default function Hints() {
         }}
         closable={false}
       >
-        <Card title={modalTitle} loading={hintsUpdate.isLoading}>
+        <Card
+          title={hintsUpdate.isLoading ? "Updating" : modalTitle}
+          loading={hintsUpdate.isLoading}
+        >
           <Form form={formAddHint} onFinish={modalOnSubmit}>
             <Form.Item name="group_id" label="Group Id" hidden>
               <Input disabled />
@@ -160,6 +163,9 @@ export default function Hints() {
             </Form.Item>
             <Form.Item name="hint" label="Hint" rules={[{ required: true }]}>
               <Input />
+            </Form.Item>
+            <Form.Item hidden>
+              <AntButton htmlType="submit">Submit</AntButton>
             </Form.Item>
           </Form>
         </Card>
@@ -255,7 +261,9 @@ export default function Hints() {
               text={`${hintsSend.isLoading ? "" : ">"} ${
                 !hints || hints.length < 1
                   ? "Dont give hints, Let's continue"
-                  : "Whisper Hints to Santa"
+                  : `${
+                      hintsSend.isLoading ? "Whispering" : "Whisper"
+                    } Hints to Santa`
               }`}
               isInverted
               onClick={async () => {

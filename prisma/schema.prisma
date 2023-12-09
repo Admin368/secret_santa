@@ -88,20 +88,21 @@ model VerificationToken {
 // }
 
 model member {
-  id          String  @id @default(cuid())
-  name        String
-  email       String
-  hints       String?
-  hints_sent Boolean?
-  receiver_id String? @unique
-  link        String?
+  id           String   @id @default(cuid())
+  name         String
+  email        String
+  hints        String?
+  hints_sent   Boolean?
+  receiver_id  String?  @unique
+  link         String?
   link_is_seen Boolean?
-  group_id    String
-  group       group   @relation(fields: [group_id], references: [id], onDelete: Cascade)
+  group_id     String
+  group        group    @relation(fields: [group_id], references: [id], onDelete: Cascade)
 }
 
 model group {
   id         String   @id @default(cuid())
+  name       String
   password   String
   is_matched Boolean
   members    member[]

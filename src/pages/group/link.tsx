@@ -45,7 +45,9 @@ export default function Link(props: { BASE_URL?: string }) {
       <CheckAuth />
       <div className="text-center text-white">
         <p className="py-2.5  text-2xl text-white">
-          We created a new santa link
+          We created a new
+          <br />
+          Secret Santa link
         </p>
         <p className="py-2.5 font-light">
           Please copy and keep this link to view the details later.

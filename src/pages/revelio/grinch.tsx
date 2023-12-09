@@ -56,9 +56,9 @@ function TextDisplay(props: PropsTextDisplay) {
     <span>
       🤫
       <br />
-      Now, This its a secret,
+      Now, This is a secret,
       <br />
-      No one can know it,
+      No one can know,
       <br />
     </span>,
     <span>

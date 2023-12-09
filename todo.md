@@ -14,4 +14,5 @@
 - hint link for email {cm:2023-12-09}
 - group names
 
-- hints => email send
+- hints => email send {cm:2023-12-09}
+- remove smtp credentials and get new ones
