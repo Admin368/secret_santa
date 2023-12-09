@@ -1,28 +1,44 @@
-# Create T3 App
+🎅🎁🎄 **Secret Santa** 🎄🎁🎅
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+## Introduction
+Welcome to **Secret Santa**, a web application that allows you to organize a Secret Santa gift exchange with your friends, family, or colleagues. The application is built using TypeScript with Next.js framework, nodemailer, Ant Design, Tailwind, Prisma ORM, and TRPC.
+The structure of the application was bootstrapped with `create-t3-app`.
 
-## What's next? How do I make an app with this?
+## Features
+- Create a group and add a list of people and their emails.
+- The application matches the people and emails them secretly to tell them who they will be getting a gift for.
+- Members of the group can upload hints for their Secret Santa.
+- The Secret Santa is notified by email when their receiver uploads hints of want.
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+## Live Website
+You can access the live website at [santa.maravian.com](https://santa.maravian.com).
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+## Installation
+1. Clone the repository.
+2. Setup the environment variables for you database and SMTP credentials for email functionality renaming the .env.example to .env and filling the values
+2. Install the dependencies using `yarn install`.
+3. Updating the database with the schema `yarn db:push`.
+4. Run the application using `yarn dev`.
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+## Usage
+1. Create a group and add a list of people and their emails.
+2. The application randomly matches the people and emails them secretly to tell them who they will be getting a gift for.
+3. Members of the group can upload hints for their Secret Santa.
+4. The Secret Santa is notified by email when a member of the group uploads their hints.
 
-## Learn More
+## Note
+1. If the types of the values depending the database suddenly go missing or invalid, run `npx prisma generate` to make/update the types from the schema and db.
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+## Contributing
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+## License
+[MIT](https://choosealicense.com/licenses/mit/)
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+## Acknowledgements
+- [Next.js](https://nextjs.org/)
+- [Prisma ORM](https://www.prisma.io/)
+- [TRPC](https://trpc.io/)
+- [Create T3 App](https://create.t3.gg/)
 
-## How do I deploy this?
-
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+🎁🎄🎅 Happy Holidays! 🎅🎄🎁

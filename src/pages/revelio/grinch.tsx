@@ -10,8 +10,6 @@ import { api } from "~/utils/api";
 
 interface PropsTextDisplay {
   name: string;
-  // santa_id: string;
-  // santa_name: string;
   members: string[];
   santa: member;
   isAuto?: boolean;
@@ -26,14 +24,6 @@ function TextDisplay(props: PropsTextDisplay) {
       <br />
       The person you will be gifting this year.
     </span>,
-    // <span>
-    //   <br />
-    //   Are you ready to
-    //   <br />
-    //   find out Whose
-    //   <br />
-    //   Secret Santa you are?
-    // </span>,
     <span>
       <br />
       Your group has:
@@ -74,12 +64,9 @@ function TextDisplay(props: PropsTextDisplay) {
   const [text, setText] = useState(revealing[0]);
   const [isSeen, setIsSeen] = useState(false);
   const [index, setIndex] = useState(0);
-  // let index = 0;
   const [showText, setShowText] = useState(false);
   const changeText = useCallback(() => {
     const newIndex = index + 1;
-    // index++;
-    // console.log(`newIndex: ${newIndex}, lenght: ${revealing.length}`);
     if (newIndex === revealing.length - 2) {
       setIsSeen(true);
       if (!props.santa.link_is_seen) {
@@ -93,7 +80,6 @@ function TextDisplay(props: PropsTextDisplay) {
             console.error(e);
           });
       }
-      //   index = 0;
     }
     setShowText(false);
     const timeout = setTimeout(() => {
@@ -110,10 +96,6 @@ function TextDisplay(props: PropsTextDisplay) {
       clearTimeout(timeout);
     }, 1000);
   }, []);
-  //   useEffect(() => {
-  //     const timer = !isSeen && setInterval(changeText, 3000);
-  //     return () => clearInterval(timer);
-  //   }, [isSeen]);
   function GetNextButtonText(index: number) {
     switch (index) {
       case 0:
@@ -157,7 +139,6 @@ function TextDisplay(props: PropsTextDisplay) {
         <>
           <br />
           <Button
-            // text={`${GetNextButtonText(index) ?? "Continue"} - ${index + 1} / ${
             text={`${GetNextButtonText(index) ?? "Continue"}`}
             onClick={() => {
               changeText();
@@ -193,7 +174,6 @@ export default function revelio() {
     }
   }, [id, receiver.data, santa.data]);
   return (
-    // <div className=" container flex min-h-screen flex-col items-center justify-center text-center text-white">
     <LayoutPage logoIsTop pageTitle="Revelio - Grinch">
       {receiver.data?.receiver_name && receiver.data?.members && santa.data ? (
         <TextDisplay

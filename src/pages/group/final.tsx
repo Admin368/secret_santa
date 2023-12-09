@@ -1,7 +1,7 @@
-// import { group } from "@prisma/client";
+import { type member } from "@prisma/client";
 import { Card, Form, Input, Modal, Spin } from "antd/lib";
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "react-toastify";
 import { Button } from "~/components/Button";
 import CheckAuth from "~/components/CheckAuth";
@@ -24,18 +24,12 @@ export default function final() {
       keepPreviousData: false,
     },
   );
-  const memberType = group.data?.members[0];
   const memberAdd = api.group.member_add.useMutation();
   const emailSend = api.group.email_send.useMutation();
   const emailSendAll = api.group.email_send_all.useMutation();
-  // const memberSendEmail = api.group.member_add.useMutation();
-  // const memberRemove = api.group.member_remove.useMutation();
-  // const membersMakeSantas = api.group.members_make_santas.useMutation();
 
   // form
-  const [formAddPerson] = Form.useForm<
-    typeof memberType & { is_edit?: boolean }
-  >();
+  const [formAddPerson] = Form.useForm<member & { is_edit?: boolean }>();
 
   // states
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -43,7 +37,7 @@ export default function final() {
 
   // functions
   const modalOpen = useCallback(
-    (args: { edit_member?: typeof memberType }) => {
+    (args: { edit_member?: member }) => {
       formAddPerson.resetFields();
       setModalTitle("Add person");
       if (args.edit_member) {
@@ -77,7 +71,7 @@ export default function final() {
   }, [formAddPerson]);
 
   const onMemberResendEmail = useCallback(
-    (args: { member: typeof memberType }) => {
+    (args: { member: member }) => {
       const group_id = args.member?.group_id;
       const member = args.member;
       if (group_id && pwd && member) {
@@ -86,7 +80,6 @@ export default function final() {
         emailSend
           .mutateAsync({
             id: member.id,
-            // type: "member",
             action: "send_santa_receiver_name",
           })
           .then((res) => {
@@ -129,25 +122,6 @@ export default function final() {
   }, [id, group, pwd]);
 
   // useEffects
-  useEffect(() => {
-    // [] CHECK IF GROUP MATCHED
-    // const group_ = group.data;
-    // if (group_) {
-    //   if (group_.is_matched !== true) {
-    //     toast.error("This group is not yet matched");
-    //     window.setTimeout(() => {
-    //       void router.push({
-    //         pathname: "/group/match",
-    //         query: {
-    //           id,
-    //           pwd,
-    //         },
-    //       });
-    //       return true;
-    //     }, 1000);
-    //   }
-    // }
-  }, [group.data, id, pwd]);
   return (
     <LayoutPage pageTitle="Group - Final">
       <CheckAuth />
@@ -219,7 +193,6 @@ export default function final() {
           >
             <div
               style={{
-                // flex: 1,
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
@@ -229,7 +202,6 @@ export default function final() {
                 maxHeight: "50vh",
                 overflow: "auto",
                 gap: 5,
-                // border: `1px solid white`,
               }}
             >
               {group.data?.members && group.data?.members?.length > 0 ? (
@@ -242,9 +214,6 @@ export default function final() {
                       subText={member.email}
                       isInverted
                       width="100%"
-                      onClick={() => {
-                        // modalOpen();
-                      }}
                       isSeen={member.link_is_seen === true ? true : false}
                       menuOptions={[
                         {

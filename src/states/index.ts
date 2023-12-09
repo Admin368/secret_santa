@@ -1,17 +1,17 @@
 import { atom, selector } from "recoil";
-// export const stateColors = ["#742B80", "#2B8043", "#322B80", "#80772B"];
+
 export const stateColors = atom({
   key: "colors", // unique ID (with respect to other atoms/selectors)
   default: ["#742B80", "#2B8043", "#322B80", "#80772B"], // default value (aka initial value)
 });
 
 export const stateColorIndex = atom({
-  key: "colorIndex", // unique ID (with respect to other atoms/selectors)
-  default: 0, // default value (aka initial value)
+  key: "colorIndex",
+  default: 0,
 });
 
 export const stateColorsLength = selector({
-  key: "colorLength", // unique ID (with respect to other atoms/selectors)
+  key: "colorLength",
   get: ({ get }) => {
     const colors_ = get(stateColors);
     return colors_.length ?? 0;
@@ -19,7 +19,7 @@ export const stateColorsLength = selector({
 });
 
 export const stateColor = selector({
-  key: "color", // unique ID (with respect to other atoms/selectors)
+  key: "color",
   get: ({ get }) => {
     const colorIndex_ = get(stateColorIndex);
     const colors_ = get(stateColors);

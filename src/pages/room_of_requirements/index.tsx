@@ -1,19 +1,13 @@
 import { LoadingOutlined } from "@ant-design/icons";
-// import type { member } from "@prisma/client";
 import { useEffect } from "react";
 import { Button } from "~/components/Button";
 import LayoutPage from "~/layouts/LayoutPage";
-// import Hints from "~/pages/revelio/hints";
 import { api } from "~/utils/api";
 
-// export default Hints;
 interface TypeQuery {
   id?: string;
 }
-// interface TypeHintData {
-//   santa_name?: string;
-//   hints: string[];
-// }
+
 export async function getServerSideProps(context: { query: TypeQuery }) {
   const query = context.query;
   const id = query.id ?? null;
@@ -25,24 +19,18 @@ export async function getServerSideProps(context: { query: TypeQuery }) {
 }
 export default function RoomOfRequirements({ id }: { id: string }) {
   const receiver = api.group.member_get_my_receiver.useMutation();
-  // useEffect
-  useEffect(() => {
-    console.log("id", id);
-    console.log("receiver", receiver.data);
 
+  // useEffects
+  useEffect(() => {
     if (id) {
       receiver
         .mutateAsync({ id, hintsOnly: true })
         .then((res) => {
-          //   const hints = receiver.data?.hints;
           console.log(res);
         })
         .catch((e) => console.error(e));
     }
   }, [id]);
-  useEffect(() => {
-    console.log(receiver.isSuccess);
-  }, [receiver]);
   return (
     <LayoutPage pageTitle="Room of Requirements">
       <span style={{ padding: 20, width: "100%" }}>
@@ -55,8 +43,6 @@ export default function RoomOfRequirements({ id }: { id: string }) {
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                // border: "1px solid black",
-                // padding: 10,
                 gap: 5,
               }}
             >

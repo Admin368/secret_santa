@@ -34,14 +34,7 @@ function ColorChanger() {
     return () => clearInterval(timer);
   }, [colorIndex, colorsLength]);
   useEffect(() => {
-    // if (color) document.body.style.backgroundColor = color;
-    // const color1 = colors[colorIndex];
-    // const color2 = colors[colorIndex + 1];
-    // const color3 = "";
-    if (color)
-      // document.body.style.backgroundImage = `linear-gradient(to right, ${color1}, ${color2})`;
-      // document.body.style.backgroundImage = `linear-gradient(45deg, ${color1}, ${color2})`;
-      document.body.style.background = color;
+    if (color) document.body.style.background = color;
   }, [color, colors, colorIndex, colorsLength]);
   return null;
 }

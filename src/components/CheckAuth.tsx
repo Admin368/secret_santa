@@ -1,6 +1,4 @@
 import FormItem from "antd/lib/form/FormItem";
-// import Form from "antd/lib/form/Form";
-// import Input from "antd/lib/input/Input";
 import Modal from "antd/lib/modal/Modal";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
@@ -46,7 +44,6 @@ export default function CheckAuth() {
     const data = auth.data;
     if (data) {
       if (data.isAuth !== true) toast.error("Wrong Password");
-      //   form.getFieldError("pwd");
       form.setFields([
         {
           name: "pwd",

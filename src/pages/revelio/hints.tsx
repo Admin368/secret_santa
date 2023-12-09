@@ -1,12 +1,9 @@
-// import { group } from "@prisma/client";
-// import { LoadingOutlined } from "@ant-design/icons";
 import { Card, Form, Input, Modal, Spin, Button as AntButton } from "antd/lib";
 import { useRouter } from "next/router";
 import { useCallback, useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { Button } from "~/components/Button";
 import LayoutPage from "~/layouts/LayoutPage";
-// import CheckAuth from "~/components/CheckAuth";
 import { api } from "~/utils/api";
 
 export default function Hints() {
@@ -19,12 +16,8 @@ export default function Hints() {
     { id },
     { enabled: id ? true : false },
   );
-  //   const memberType = group.data?.members[0];
   const hintsUpdate = api.group.member_hints_update.useMutation();
   const hintsSend = api.group.member_hints_send.useMutation();
-
-  //   const memberRemove = api.group.member_remove.useMutation();
-  //   const membersMakeSantas = api.group.members_make_santas.useMutation();
 
   // form
   const [formAddHint] = Form.useForm<{ id: string; hint: string }>();
@@ -75,7 +68,6 @@ export default function Hints() {
   const onHintRemove = useCallback(
     (args: { index: number }) => {
       const _hints: string[] = [];
-      // delete hints_[args.index];
       hints.map((hint, index) => {
         if (index !== args.index) _hints.push(hint);
       });
@@ -142,10 +134,8 @@ export default function Hints() {
         }}
         okButtonProps={{
           type: "primary",
-          // color: "red",
         }}
         onOk={() => {
-          // modalOnSubmit();
           formAddHint.submit();
         }}
         closable={false}
@@ -184,9 +174,7 @@ export default function Hints() {
             </p>
           </div>
           <div
-            // className="h-75 w-75 flex flex-col rounded-md border text-black"
             style={{
-              //   width: "300px",
               width: "100%",
               borderRadius: 5,
               flex: 1,
@@ -200,7 +188,6 @@ export default function Hints() {
           >
             <div
               style={{
-                // flex: 1,
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
@@ -210,7 +197,6 @@ export default function Hints() {
                 maxHeight: "50vh",
                 overflow: "auto",
                 gap: 5,
-                // border: `1px solid white`,
               }}
             >
               {hints.length > 0 ? (

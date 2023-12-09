@@ -21,7 +21,6 @@ export async function getServerSideProps() {
   };
 }
 export default function Link(props: { BASE_URL?: string }) {
-  // const group = api.group.
   const router = useRouter();
   const id = router.query.id as string;
   const pwd = router.query.pwd as string;
@@ -79,10 +78,6 @@ export default function Link(props: { BASE_URL?: string }) {
                 isDisabled={link ? false : true}
                 text="1.Copy Link"
                 isInverted
-                onClick={async () => {
-                  // await router.push("/make/link");
-                  // await navigator?.clipboard?.writeText("sdsd");
-                }}
               />
             </CopyToClipboard>
           </div>{" "}
