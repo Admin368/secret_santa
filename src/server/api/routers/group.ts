@@ -31,6 +31,25 @@ export function returnFormatEmailRevealReceiver(args: {
   </div>
 `;
 }
+
+export function returnFormatEmailHintToSanta(args: {
+  // santa_id: string;
+  santa: member;
+  base_url: string;
+}): string {
+  const hints_link = `${args.base_url}/room_of_requirements?id=${args.santa.id}`;
+  return `
+  <div width="100%">
+    <h1>Secret Santa Hint</h1>
+    <p>Greetings Santa ${args.santa.name},</p>
+    <p>Your receiver has sent you some hint of what they want for christmas,</p>
+    <p>Hopefully these help you in choosing your gift for them,</p>
+    <p>Click the link below to see the hints!</p>
+    <a href="${hints_link}" target="_blank">${hints_link}</a>
+    <iframe src="/revelio/prelink?link=${hints_link}" height="600px" width="600px"></iframe>
+  </div>
+`;
+}
 export const groupRouter = createTRPCRouter({
   test: publicProcedure.query(() => {
     return {
@@ -321,6 +340,22 @@ export const groupRouter = createTRPCRouter({
           return {
             isError: true,
             message: "Invalid hints format",
+          };
+        }
+        const message: TypeSendEmail = {
+          to: santa.email,
+          subject: "Secret Santa - Hints",
+          text: "Your receiver sent you hints",
+          html: returnFormatEmailHintToSanta({
+            santa,
+            base_url: BASE_URL,
+          }),
+        };
+        const email_res = await emailSend(message);
+        if (!email_res) {
+          return {
+            isError: true,
+            message: `Failed to send hints`,
           };
         }
         return {
