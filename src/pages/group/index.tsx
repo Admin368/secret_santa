@@ -4,23 +4,94 @@ import { useRouter } from "next/router";
 import { api } from "~/utils/api";
 import { toast } from "react-toastify";
 import LayoutPage from "~/layouts/LayoutPage";
+import { Card, Form, Input, Modal } from "antd/lib";
+import { useCallback, useState } from "react";
+import Logo from "~/components/Logo";
+import { useRecoilValue } from "recoil";
+import { stateColor } from "~/states";
+
 export default function Page() {
+  // states
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const color = useRecoilValue(stateColor);
+  // navigation
   const router = useRouter();
 
+  // form
+  const [formGroupCreate] = Form.useForm<{ name: string }>();
+
+  // api
   const groupCreate = api.group.create.useMutation();
-  async function handleGroupCreate() {
+
+  // functions
+  const onModalOpen = useCallback(() => {
+    setModalIsOpen(true);
+  }, []);
+  const onModalClose = useCallback(() => {
+    setModalIsOpen(false);
+  }, []);
+  const handleGroupCreate = useCallback(async () => {
+    const values = formGroupCreate.getFieldsValue();
+    const name = values.name;
+    if (!name) {
+      toast.error("Please Provide a name for your group");
+      return;
+    }
     await groupCreate
-      .mutateAsync()
+      .mutateAsync({ name })
       .then(async (res) => {
+        onModalClose();
         await router.push(`/group/link?id=${res.id}&pwd=${res.password}`);
       })
       .catch((e) => {
         console.error(e);
         toast.error("Failed to create link");
       });
-  }
+  }, [formGroupCreate]);
+
+  // effects
+
   return (
     <LayoutPage pageTitle="Group">
+      <Modal
+        open={modalIsOpen}
+        centered
+        onCancel={onModalClose}
+        onOk={handleGroupCreate}
+        closeIcon={null}
+      >
+        <span
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "100%",
+            gap: 5,
+          }}
+        >
+          <Logo textColor={color ?? "black"} />
+          <Card
+            title={`${groupCreate.isLoading ? "Creating" : "Create"} new group`}
+            loading={groupCreate.isLoading}
+            style={{ width: "100%" }}
+          >
+            <Form
+              form={formGroupCreate}
+              onFinish={handleGroupCreate}
+              style={{ padding: 10 }}
+            >
+              <Form.Item
+                name={"name"}
+                label={"Name"}
+                rules={[{ required: true, max: 15 }]}
+              >
+                <Input />
+              </Form.Item>
+            </Form>
+          </Card>
+        </span>
+      </Modal>
       <div
         style={{
           // flexGrow: 1,
@@ -43,7 +114,8 @@ export default function Page() {
           text="Create Santa List"
           isInverted
           onClick={async () => {
-            await handleGroupCreate();
+            // await handleGroupCreate();
+            onModalOpen();
           }}
         />
         {/* <Input /> */}

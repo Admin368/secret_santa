@@ -7,13 +7,20 @@ import { toast } from "react-toastify";
 import { Spin } from "antd/lib";
 import CheckAuth from "~/components/CheckAuth";
 import LayoutPage from "~/layouts/LayoutPage";
-// import { env } from "~/env";
+import { env } from "~/env";
 
 interface linkType {
   link: string;
   password: string;
 }
-export default function link() {
+export async function getServerSideProps() {
+  return {
+    props: {
+      BASE_URL: env.BASE_URL,
+    },
+  };
+}
+export default function Link(props: { BASE_URL?: string }) {
   // const group = api.group.
   const router = useRouter();
   const id = router.query.id as string;
@@ -26,7 +33,9 @@ export default function link() {
   useEffect(() => {
     if (group.data?.id && group.data?.password) {
       setLink({
-        link: `https://santa.maravian.com/group/link?id=${group.data.id}`,
+        link: `${
+          props.BASE_URL ?? "https://santa.maravian.com"
+        }/group/link?id=${group.data.id}`,
         password: group.data.password,
       });
     }
@@ -36,7 +45,9 @@ export default function link() {
       <CheckAuth />
       <div className="text-center text-white">
         <p className="py-2.5  text-2xl text-white">
-          We created a new santa link
+          We created a new
+          <br />
+          Secret Santa link
         </p>
         <p className="py-2.5 font-light">
           Please copy and keep this link to view the details later.

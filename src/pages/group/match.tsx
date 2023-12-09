@@ -1,5 +1,5 @@
 // import { group } from "@prisma/client";
-import { Card, Form, Input, Modal, Spin } from "antd/lib";
+import { Card, Form, Input, Modal, Spin, Button as AntButton } from "antd/lib";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -113,6 +113,14 @@ export default function Match() {
           toast.error(`Please have atleast 3 people`);
           return;
         }
+        toast.info(`Matching and Emailing Santas`);
+        async function onMatch() {
+          await router.push({
+            pathname: "/group/final",
+            query: { id, pwd },
+          });
+          await group.refetch();
+        }
         membersMakeSantas
           .mutateAsync({
             group_id,
@@ -120,13 +128,14 @@ export default function Match() {
             is_rematch: args.is_rematch,
           })
           .then(async (res) => {
-            if (res === true) {
-              toast.success(`Successfully assigned santa`);
-              await router.push({
-                pathname: "/group/final",
-                query: { id, pwd },
-              });
-              await group.refetch();
+            if (!res.isError === true) {
+              toast.success(res.message ?? `Successfully assigned santa`);
+              await onMatch();
+            } else {
+              toast.error(res.message);
+              if (res.is_matched) {
+                await onMatch();
+              }
             }
           })
           .catch((e) => {
@@ -174,7 +183,11 @@ export default function Match() {
             <Form.Item name="id" label="id" hidden>
               <Input disabled />
             </Form.Item>
-            <Form.Item name="name" label="Name" rules={[{ required: true }]}>
+            <Form.Item
+              name="name"
+              label="Name"
+              rules={[{ required: true, max: 15 }]}
+            >
               <Input />
             </Form.Item>
             <Form.Item
@@ -183,6 +196,9 @@ export default function Match() {
               rules={[{ required: true, type: "email" }]}
             >
               <Input />
+            </Form.Item>
+            <Form.Item hidden>
+              <AntButton htmlType="submit">Submit</AntButton>
             </Form.Item>
           </Form>
         </Card>
@@ -198,7 +214,7 @@ export default function Match() {
         >
           <div className="text-center text-white">
             <p className="py-2.5  text-2xl text-white">
-              Add people to your Secret santa group
+              Add people to your Secret Santa group
             </p>
             <p className="py-2.5 font-light">Randomly assign Secret Santas</p>
           </div>

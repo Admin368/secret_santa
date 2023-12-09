@@ -27,6 +27,7 @@ export default function final() {
   const memberType = group.data?.members[0];
   const memberAdd = api.group.member_add.useMutation();
   const emailSend = api.group.email_send.useMutation();
+  const emailSendAll = api.group.email_send_all.useMutation();
   // const memberSendEmail = api.group.member_add.useMutation();
   // const memberRemove = api.group.member_remove.useMutation();
   // const membersMakeSantas = api.group.members_make_santas.useMutation();
@@ -84,7 +85,7 @@ export default function final() {
         emailSend
           .mutateAsync({
             id: member.id,
-            type: "member",
+            // type: "member",
             action: "send_santa_receiver_name",
           })
           .then((res) => {
@@ -106,6 +107,23 @@ export default function final() {
   const onMembersResendAllEmails = useCallback(() => {
     const group_id = id;
     if (group_id && pwd) {
+      console.log("client-send email to all");
+      emailSendAll
+        .mutateAsync({
+          id: group_id,
+          action: "send_receiver_names",
+        })
+        .then((res) => {
+          console.log(res);
+          if (res.isError) {
+            toast.error(res.message);
+          } else {
+            toast.success(res.message);
+          }
+        })
+        .catch((e) => {
+          console.error(e);
+        });
     }
   }, [id, group, pwd]);
 
@@ -176,8 +194,11 @@ export default function final() {
           <div className="text-center text-white">
             <p className="py-2.5  text-2xl text-white">Behold your santas</p>
             <p className="py-2.5 font-light">
-              The Santas have been emailed. Please notify them to check their
-              emails & trash
+              The Santas have been emailed.
+              <br />
+              Please notify them to check their
+              <br />
+              emails & trash box
             </p>
           </div>
           <div
@@ -223,6 +244,7 @@ export default function final() {
                       onClick={() => {
                         // modalOpen();
                       }}
+                      isSeen={member.link_is_seen === true ? true : false}
                       menuOptions={[
                         {
                           key: "email_send",
@@ -273,6 +295,8 @@ export default function final() {
             }}
           >
             <Button
+              isDisabled={emailSendAll.isLoading}
+              isLoading={emailSendAll.isLoading}
               text="Resend All Emails"
               onClick={async () => {
                 onMembersResendAllEmails();
