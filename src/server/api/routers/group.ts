@@ -458,7 +458,7 @@ export const groupRouter = createTRPCRouter({
         type: z.union([z.literal("group"), z.literal("member")]),
         action: z.union([
           z.literal("send_santa_receiver_name"),
-          z.literal("notify_hints"),
+          z.literal("send_all_santas_receiver_name"),
         ]),
       }),
     )
@@ -466,13 +466,6 @@ export const groupRouter = createTRPCRouter({
       let memberORgroup: member | group | null = null;
       switch (input.type) {
         case "member":
-          memberORgroup = await ctx.db.member.findUnique({
-            where: {
-              id: input.id,
-            },
-          });
-          break;
-        case "group":
           memberORgroup = await ctx.db.member.findUnique({
             where: {
               id: input.id,
@@ -532,7 +525,7 @@ export const groupRouter = createTRPCRouter({
             message: `Failed to send email to ${message.to}`,
           };
         }
-        console.log(email_res ? "email-success" : "email-failed");
+        // console.log(email_res ? "email-success" : "email-failed");
       }
       return {
         isError: true,
@@ -544,5 +537,79 @@ export const groupRouter = createTRPCRouter({
       //     is_matched: false,
       //   },
       // });
+    }),
+  email_send_all: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        action: z.union([
+          z.literal("send_receiver_names"),
+          z.literal("send_hints"),
+        ]),
+      }),
+    )
+    .mutation(async ({ ctx, input }): Promise<TypeRes> => {
+      const group = await ctx.db.group.findUnique({
+        where: {
+          id: input.id,
+        },
+        include: {
+          members: true,
+        },
+      });
+      if (!group) {
+        return {
+          isError: true,
+          message: `Could not find your group`,
+        };
+      }
+
+      if (group.is_matched !== true || group.members.length < 1) {
+        return {
+          isError: true,
+          message: `Group is either not matched or has no members`,
+        };
+      }
+
+      const failedMembers: string[] = [];
+      await Promise.all(
+        group.members.map(async (member) => {
+          switch (input.action) {
+            case "send_receiver_names":
+              if (!member.link) {
+                failedMembers.push(member.email);
+                break;
+              }
+              const message: TypeSendEmail = {
+                to: member.email,
+                subject: "Secret Santa - Reveal",
+                text: "You have been chosen your friend group to be somebody's Secret Santa",
+                html: returnFormatEmailRevealReceiver({
+                  santa_name: member.name,
+                  receiver_reveal_link: member.link,
+                  base_url: BASE_URL,
+                }),
+              };
+              const email_res = await emailSend(message);
+              if (!email_res) {
+                failedMembers.push(member.email);
+              }
+              break;
+            default:
+          }
+        }),
+      );
+      if (failedMembers.length > 1) {
+        return {
+          isError: true,
+          message: `Failed to send emails to these memebers ${JSON.stringify(
+            failedMembers,
+          )}`,
+        };
+      }
+      return {
+        isError: false,
+        message: `Successfully sent emails to all members`,
+      };
     }),
 });

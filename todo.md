@@ -13,3 +13,5 @@
 - prelink for email {cm:2023-12-09}
 - hint link for email {cm:2023-12-09}
 - group names
+
+- hints => email send

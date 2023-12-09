@@ -27,6 +27,7 @@ export default function final() {
   const memberType = group.data?.members[0];
   const memberAdd = api.group.member_add.useMutation();
   const emailSend = api.group.email_send.useMutation();
+  const emailSendAll = api.group.email_send_all.useMutation();
   // const memberSendEmail = api.group.member_add.useMutation();
   // const memberRemove = api.group.member_remove.useMutation();
   // const membersMakeSantas = api.group.members_make_santas.useMutation();
@@ -106,6 +107,23 @@ export default function final() {
   const onMembersResendAllEmails = useCallback(() => {
     const group_id = id;
     if (group_id && pwd) {
+      console.log("client-send email to all");
+      emailSendAll
+        .mutateAsync({
+          id: group_id,
+          action: "send_receiver_names",
+        })
+        .then((res) => {
+          console.log(res);
+          if (res.isError) {
+            toast.error(res.message);
+          } else {
+            toast.success(res.message);
+          }
+        })
+        .catch((e) => {
+          console.error(e);
+        });
     }
   }, [id, group, pwd]);
 
@@ -273,6 +291,8 @@ export default function final() {
             }}
           >
             <Button
+              isDisabled={emailSendAll.isLoading}
+              isLoading={emailSendAll.isLoading}
               text="Resend All Emails"
               onClick={async () => {
                 onMembersResendAllEmails();
