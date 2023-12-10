@@ -18,7 +18,11 @@ export default function Page() {
   const router = useRouter();
 
   // form
-  const [formGroupCreate] = Form.useForm<{ name: string; email: string }>();
+  const [formGroupCreate] = Form.useForm<{
+    group_name: string;
+    name: string;
+    email: string;
+  }>();
 
   // api
   const groupCreate = api.group.create.useMutation();
@@ -34,12 +38,13 @@ export default function Page() {
     const values = formGroupCreate.getFieldsValue();
     const name = values.name;
     const email = values.email;
+    const group_name = values.group_name;
     if (!name) {
       toast.error("Please Provide a name for your group");
       return;
     }
     await groupCreate
-      .mutateAsync({ name, email })
+      .mutateAsync({ name, email, group_name })
       .then(async (res) => {
         onModalClose();
         if (res.group) {
@@ -90,8 +95,15 @@ export default function Page() {
               style={{ padding: 10 }}
             >
               <Form.Item
+                name={"group_name"}
+                label={"Group Name"}
+                rules={[{ required: true, max: 15 }]}
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item
                 name={"name"}
-                label={"Name"}
+                label={"Your Name"}
                 rules={[{ required: true, max: 15 }]}
               >
                 <Input />

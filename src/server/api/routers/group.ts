@@ -64,10 +64,11 @@ export const groupRouter = createTRPCRouter({
   create: publicProcedure
     .input(z.object({ name: z.string().min(1) }))
     .input(z.object({ email: z.string().email() }))
+    .input(z.object({ group_name: z.string() }))
     .mutation(async ({ ctx, input }): Promise<TypeRes & { group?: group }> => {
       const group = await ctx.db.group.create({
         data: {
-          name: input.name,
+          name: input.group_name,
           email: input.email,
           password: String(Math.floor(Math.random() * 5001)),
           is_matched: false,
@@ -79,6 +80,13 @@ export const groupRouter = createTRPCRouter({
           message: `Failed to create group`,
         };
       } else {
+        await ctx.db.member.create({
+          data: {
+            name: input.name,
+            email: input.email,
+            group_id: group.id,
+          },
+        });
         const link = `${
           env.BASE_URL ?? "https://santa.maravian.com"
         }/group/link?id=${group.id}&pwd=${group.password}`;
