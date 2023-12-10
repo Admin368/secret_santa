@@ -428,7 +428,7 @@ export const groupRouter = createTRPCRouter({
         const message: TypeSendEmail = {
           to: santa.email,
           // subject: `Secret Santa - ${santa.group.name} - Hints`,
-          subject: `Secret Santa ${santa.name}, your Receiver sent you hints`,
+          subject: `Santa ${santa.name}, your Receiver sent you hints`,
           text: "Your receiver sent you hints",
           html: returnFormatEmailHintToSanta({
             santa,
