@@ -30,7 +30,7 @@ function TextDisplay(props: PropsTextDisplay) {
       {props.members.map((member, index) => (
         <span key={index}>
           <br />
-          {index + 1}.{props.name === member ? "You" : member},
+          {index + 1}.{props.santa.name === member ? "You" : member},
         </span>
       ))}
     </span>,
