@@ -63,14 +63,47 @@ export const groupRouter = createTRPCRouter({
   }),
   create: publicProcedure
     .input(z.object({ name: z.string().min(1) }))
-    .mutation(async ({ ctx, input }) => {
-      return ctx.db.group.create({
+    .input(z.object({ email: z.string().email() }))
+    .mutation(async ({ ctx, input }): Promise<TypeRes & { group?: group }> => {
+      const group = await ctx.db.group.create({
         data: {
           name: input.name,
+          email: input.email,
           password: String(Math.floor(Math.random() * 5001)),
           is_matched: false,
         },
       });
+      if (!group) {
+        return {
+          isError: true,
+          message: `Failed to create group`,
+        };
+      } else {
+        const link = `${
+          env.BASE_URL ?? "https://santa.maravian.com"
+        }/group/link?id=${group.id}&pwd=${group.password}`;
+        await emailSend({
+          to: input.email,
+          subject: `Secret Santa - ${input.name} - Link`,
+          text: `
+            <div width="100%">
+            <h1>Secret Santa - ${group.name} - Link</h1>
+            <p>
+            Greetings <strong>Link Maker</strong>,<br/>
+            You have created a Secret Santa group for ${group.name},<br/>
+            Please Keep this link only to yourself,<br/>
+            Use it if you need to edit or resend emails to your Santas!<br/>
+            <a href="${link}" target="_blank">${link}</a>
+            </p>
+            </div>
+          `,
+        });
+        return {
+          isError: false,
+          message: `Successfully created your Secret Santa ${group.name} Group`,
+          group,
+        };
+      }
     }),
   get: publicProcedure
     .input(z.object({ id: z.string().min(1) }))

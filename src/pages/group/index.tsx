@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { api } from "~/utils/api";
 import { toast } from "react-toastify";
 import LayoutPage from "~/layouts/LayoutPage";
-import { Card, Form, Input, Modal } from "antd/lib";
+import { Card, Form, Input, Modal, Button as AntButton } from "antd/lib";
 import { useCallback, useState } from "react";
 import Logo from "~/components/Logo";
 import { useRecoilValue } from "recoil";
@@ -18,7 +18,7 @@ export default function Page() {
   const router = useRouter();
 
   // form
-  const [formGroupCreate] = Form.useForm<{ name: string }>();
+  const [formGroupCreate] = Form.useForm<{ name: string; email: string }>();
 
   // api
   const groupCreate = api.group.create.useMutation();
@@ -33,15 +33,23 @@ export default function Page() {
   const handleGroupCreate = useCallback(async () => {
     const values = formGroupCreate.getFieldsValue();
     const name = values.name;
+    const email = values.email;
     if (!name) {
       toast.error("Please Provide a name for your group");
       return;
     }
     await groupCreate
-      .mutateAsync({ name })
+      .mutateAsync({ name, email })
       .then(async (res) => {
         onModalClose();
-        await router.push(`/group/link?id=${res.id}&pwd=${res.password}`);
+        if (res.group) {
+          toast.success(res.message);
+          await router.push(
+            `/group/link?id=${res.group.id}&pwd=${res.group.password}`,
+          );
+        } else {
+          toast.error(res.message);
+        }
       })
       .catch((e) => {
         console.error(e);
@@ -52,7 +60,7 @@ export default function Page() {
   // effects
 
   return (
-    <LayoutPage pageTitle="Group">
+    <LayoutPage>
       <Modal
         open={modalIsOpen}
         centered
@@ -87,6 +95,16 @@ export default function Page() {
                 rules={[{ required: true, max: 15 }]}
               >
                 <Input />
+              </Form.Item>
+              <Form.Item
+                name={"email"}
+                label={"Your Email"}
+                rules={[{ required: true }]}
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item hidden>
+                <AntButton htmlType="submit" />
               </Form.Item>
             </Form>
           </Card>
