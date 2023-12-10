@@ -97,7 +97,7 @@ function KnowSanta(props: { member: member; id: string }) {
         </button>
       </div>
       <p className="py-2.5 text-2xl">
-        Who You will be <br /> 🎁Gifting this year?🎁
+        Who will you be <br /> 🎁Gifting this year?🎁
       </p>
     </>
   );
