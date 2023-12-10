@@ -18,6 +18,7 @@ import {
 } from "~/states";
 import { ToastContainer } from "react-toastify";
 import { Snow } from "~/components/Snow";
+import MusicButton from "~/components/Music";
 
 function ColorChanger() {
   const color = useRecoilValue(stateColor);
@@ -60,6 +61,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
         />
         <ColorChanger />
         <ConfigProvider theme={theme}>
+          <MusicButton />
           <Snow />
           <Analytics />
           <Component {...pageProps} />
