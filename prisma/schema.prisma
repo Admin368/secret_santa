@@ -103,6 +103,7 @@ model member {
 model group {
   id         String   @id @default(cuid())
   name       String
+  email      String?
   password   String
   is_matched Boolean
   members    member[]

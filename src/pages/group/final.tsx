@@ -274,7 +274,7 @@ export default function final() {
             />
           </div>
           <p className="font-light text-white">
-            Tap the options on the person to resend the email
+            Tap the options on the person to edit or resend the email
           </p>
         </Spin>
       </div>

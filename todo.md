@@ -15,5 +15,6 @@
 - group names
 
 - hints => email send {cm:2023-12-09}
-- remove smtp credentials and get new ones
+- remove smtp credentials and get new ones {cm:2023-12-10}
 - /revelio/hints => if email resend, hints in member.hints and no hints added contine without sending email
+- create group, require email to send you the group link {cm:2023-12-10}

@@ -50,6 +50,9 @@ export default function Link(props: { BASE_URL?: string }) {
         </p>
         <p className="py-2.5 font-light">
           Please copy and keep this link to view the details later.
+          <br />
+          The link has also been sent to your email if you need to edit or
+          resend emails to santas later
         </p>
       </div>
       <div className="h-50 w-50 flex flex-col items-center rounded-md border p-2">
