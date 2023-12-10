@@ -79,6 +79,25 @@ export default function LayoutPage(props: PropsLayoutPage) {
           </p>
         ) : null}
       </Link>
+      <Link href={"/creators"}>
+        {router.pathname !== "/" ? (
+          <p
+            style={{
+              padding: 10,
+              fontWeight: 200,
+              color: "white",
+              textAlign: "center",
+              width: "fit-content",
+              whiteSpace: "nowrap",
+              alignSelf: "center",
+            }}
+          >
+            
+            <strong style={{ fontWeight: 800 }}>About Us</strong> 
+          </p>
+        ) : null}
+      </Link>
+      
     </div>
   );
 }

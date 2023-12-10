@@ -2,10 +2,13 @@
 import GithubOutlined from "@ant-design/icons/lib/icons/GithubOutlined";
 import LinkedinOutlined from "@ant-design/icons/lib/icons/LinkedinOutlined";
 import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/router";
 
 
 
 export default function creator() {
+    const router = useRouter();
     return (
         <div className='container  min-x-auto flex flex-col text-center items-center justify-center text-white'>
             <div>
@@ -66,6 +69,26 @@ export default function creator() {
         </div>
             <div><p className='m-4 font-medium text-lg'>“Blessed is the season which engages the whole world in a conspiracy of love.” – Hamilton Wright Mabie </p></div>
             <div><p className="text-2xl m-2">🎄</p></div>
+            <div><Link href={"/"}>
+                {router.pathname !== "/" ? (
+                    <p
+                        style={{
+                            padding: 10,
+                            fontWeight: 200,
+                            color: "white",
+                            textAlign: "center",
+                            width: "fit-content",
+                            whiteSpace: "nowrap",
+                            alignSelf: "center",
+                        }}
+                    >
+                        Create your own{" "}
+                        <strong style={{ fontWeight: 800 }}>Secret Santa</strong> list
+                        <br />
+                        Santa.Maravian.com
+                    </p>
+                ) : null}
+            </Link></div>
         </div >
 
     )
