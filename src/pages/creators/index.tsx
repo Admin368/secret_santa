@@ -67,7 +67,7 @@ export default function creator() {
             </div>
                 
         </div>
-            <div><blockquote className="text-xl italic font-semibold text-gray-900 dark:text-white"><p className='m-4 font-medium text-lg'>"I will honor Christmas in my heart, and try to keep it all the year."- Charles Dickens, A Christmas Carol</p></blockquote></div>
+            <div><blockquote className="text-xl italic font-semibold  text-white"><p className='m-4 font-medium text-lg'>"I will honor Christmas in my heart, and try to keep it all the year."- Charles Dickens, A Christmas Carol</p></blockquote></div>
             <div><p className="text-2xl m-2">🎄</p></div>
             <div><Link href={"/"}>
                 {router.pathname !== "/" ? (
