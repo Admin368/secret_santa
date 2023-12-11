@@ -107,4 +107,5 @@ model group {
   password   String
   is_matched Boolean
   members    member[]
+  createdAt DateTime? @default(now())
 }
