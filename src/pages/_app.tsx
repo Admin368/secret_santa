@@ -3,7 +3,7 @@ import { SessionProvider } from "next-auth/react";
 import { type AppType } from "next/app";
 import ConfigProvider from "antd/lib/config-provider";
 import { Analytics } from "@vercel/analytics/react";
-
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { api } from "~/utils/api";
 import theme from "~/theme/themeConfig";
 import "react-toastify/dist/ReactToastify.css";
@@ -64,6 +64,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
           <MusicButton />
           <Snow />
           <Analytics />
+          <SpeedInsights />
           <Component {...pageProps} />
         </ConfigProvider>
       </SessionProvider>
