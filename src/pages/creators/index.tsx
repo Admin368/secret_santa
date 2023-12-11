@@ -10,11 +10,11 @@ import { useRouter } from "next/router";
 export default function creator() {
     const router = useRouter();
     return (
-        <div className='container  min-x-auto flex flex-col text-center items-center justify-center text-white'>
+        <div className='container  min-x-auto flex flex-col text-center place-content-center place-items-center text-white'>
             <div>
                 <p className='text-2xl font-bold mt-4'>About Us 😎</p>
             </div>
-            <div><p className='m-4 font-medium text-lg'>we are a team of developers
+            <div><p className='m-4 font-medium text-lg'>We are a team of developers
                 currently studying in Wuhan University of Technology</p></div>
             
             <div className="flex gap-2">
@@ -67,7 +67,7 @@ export default function creator() {
             </div>
                 
         </div>
-            <div><p className='m-4 font-medium text-lg'>“Blessed is the season which engages the whole world in a conspiracy of love.” – Hamilton Wright Mabie </p></div>
+            <div><blockquote className="text-xl italic font-semibold text-gray-900 dark:text-white"><p className='m-4 font-medium text-lg'>"I will honor Christmas in my heart, and try to keep it all the year."- Charles Dickens, A Christmas Carol</p></blockquote></div>
             <div><p className="text-2xl m-2">🎄</p></div>
             <div><Link href={"/"}>
                 {router.pathname !== "/" ? (
