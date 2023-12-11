@@ -82,8 +82,8 @@ export default function LayoutPage(props: PropsLayoutPage) {
       <Link href={"/creators"}>
         {router.pathname !== "/" ? (
           <p
+          className="mb-2"
             style={{
-              padding: 10,
               fontWeight: 200,
               color: "white",
               textAlign: "center",
