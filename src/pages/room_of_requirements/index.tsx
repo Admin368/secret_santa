@@ -1,4 +1,4 @@
-import { LoadingOutlined } from "@ant-design/icons";
+import LoadingOutlined from "@ant-design/icons/lib/icons/LoadingOutlined";
 import { useEffect } from "react";
 import { Button } from "~/components/Button";
 import LayoutPage from "~/layouts/LayoutPage";

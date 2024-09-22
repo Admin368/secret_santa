@@ -2,7 +2,7 @@ import type { member } from "@prisma/client";
 import { useRouter } from "next/router";
 import { Button } from "~/components/Button";
 import { api } from "~/utils/api";
-import { LoadingOutlined } from "@ant-design/icons";
+import LoadingOutlined from "@ant-design/icons/lib/icons/LoadingOutlined";
 import LayoutPage from "~/layouts/LayoutPage";
 import { useState } from "react";
 function SantaAlreadyKnows() {
