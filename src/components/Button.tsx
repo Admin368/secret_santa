@@ -1,7 +1,8 @@
 import { useRecoilValue } from "recoil";
 import { stateColor } from "~/states";
 import AntButton from "antd/lib/button";
-import { CheckOutlined, MenuOutlined } from "@ant-design/icons";
+import CheckOutlined from "@ant-design/icons/lib/icons/CheckOutlined";
+import MenuOutlined from "@ant-design/icons/lib/icons/MenuOutlined";
 import { Menu, Popover } from "antd/lib";
 import { useState } from "react";
 export interface ButtonProps {

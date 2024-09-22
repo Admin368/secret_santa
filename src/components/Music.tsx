@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import { Button } from "antd/lib";
-import { PlayCircleOutlined, PauseCircleOutlined } from "@ant-design/icons";
+import PlayCircleOutlined from "@ant-design/icons/lib/icons/PlayCircleOutlined";
+import PauseCircleOutlined from "@ant-design/icons/lib/icons/PauseCircleOutlined";
 import YouTube from "react-youtube";
 import { useRecoilValue } from "recoil";
 import { stateColor } from "~/states";
