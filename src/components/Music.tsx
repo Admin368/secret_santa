@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { Button } from "antd/lib";
+import Button from "antd/lib/button";
 import PlayCircleOutlined from "@ant-design/icons/lib/icons/PlayCircleOutlined";
 import PauseCircleOutlined from "@ant-design/icons/lib/icons/PauseCircleOutlined";
 import YouTube from "react-youtube";

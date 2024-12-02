@@ -3,7 +3,8 @@ import { stateColor } from "~/states";
 import AntButton from "antd/lib/button";
 import CheckOutlined from "@ant-design/icons/lib/icons/CheckOutlined";
 import MenuOutlined from "@ant-design/icons/lib/icons/MenuOutlined";
-import { Menu, Popover } from "antd/lib";
+import Menu from "antd/lib/menu";
+import Popover from "antd/lib/popover";
 import { useState } from "react";
 export interface ButtonProps {
   id?: string;

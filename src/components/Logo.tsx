@@ -1,4 +1,4 @@
-import { Button } from "antd/lib";
+import Button from "antd/lib/button";
 import { useRouter } from "next/router";
 import { api } from "~/utils/api";
 

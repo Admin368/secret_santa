@@ -4,7 +4,7 @@ import { Button } from "~/components/Button";
 import { api } from "~/utils/api";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { toast } from "react-toastify";
-import { Spin } from "antd/lib";
+import Spin from "antd/lib/spin";
 import CheckAuth from "~/components/CheckAuth";
 import LayoutPage from "~/layouts/LayoutPage";
 import { env } from "~/env";

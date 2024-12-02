@@ -1,5 +1,9 @@
 import { type member } from "@prisma/client";
-import { Card, Form, Input, Modal, Spin } from "antd/lib";
+import Card from "antd/lib/card";
+import Form from "antd/lib/form";
+import Input from "antd/lib/input";
+import Modal from "antd/lib/modal";
+import Spin from "antd/lib/spin";
 import { useRouter } from "next/router";
 import { useCallback, useState } from "react";
 import { toast } from "react-toastify";
