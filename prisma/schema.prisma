@@ -91,7 +91,7 @@ model member {
   id           String   @id @default(cuid())
   name         String
   email        String
-  hints        String?
+  hints        String?  @db.Text
   hints_sent   Boolean?
   receiver_id  String?  @unique
   link         String?
@@ -101,11 +101,11 @@ model member {
 }
 
 model group {
-  id         String   @id @default(cuid())
+  id         String    @id @default(cuid())
   name       String
   email      String?
   password   String
   is_matched Boolean
   members    member[]
-  createdAt DateTime? @default(now())
+  createdAt  DateTime? @default(now())
 }
