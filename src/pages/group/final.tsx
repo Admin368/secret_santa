@@ -33,7 +33,9 @@ export default function final() {
   const emailSendAll = api.group.email_send_all.useMutation();
 
   // form
-  const [formAddPerson] = Form.useForm<member & { is_edit?: boolean }>();
+  const [formAddPerson] = Form.useForm<
+    member & { is_edit?: boolean; pwd?: string }
+  >();
 
   // states
   const [modalIsOpen, setModalIsOpen] = useState(false);
