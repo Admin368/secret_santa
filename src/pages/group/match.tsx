@@ -189,7 +189,7 @@ export default function Match() {
             <Form.Item
               name="name"
               label="Name"
-              rules={[{ required: true, max: 15 }]}
+              rules={[{ required: true, max: 30 }]}
             >
               <Input />
             </Form.Item>

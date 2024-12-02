@@ -101,14 +101,14 @@ export default function Page() {
               <Form.Item
                 name={"group_name"}
                 label={"Group Name"}
-                rules={[{ required: true, max: 15 }]}
+                rules={[{ required: true, max: 30 }]}
               >
                 <Input />
               </Form.Item>
               <Form.Item
                 name={"name"}
                 label={"Your Name"}
-                rules={[{ required: true, max: 15 }]}
+                rules={[{ required: true, max: 30 }]}
               >
                 <Input />
               </Form.Item>
