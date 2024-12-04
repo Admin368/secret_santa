@@ -47,23 +47,28 @@ export default function Page() {
       toast.error("Please Provide a name for your group");
       return;
     }
-    await groupCreate
-      .mutateAsync({ name, email, group_name })
-      .then(async (res) => {
-        onModalClose();
-        if (res.group) {
-          toast.success(res.message);
-          await router.push(
-            `/group/link?id=${res.group.id}&pwd=${res.group.password}`,
-          );
-        } else {
-          toast.error(res.message);
-        }
-      })
-      .catch((e) => {
-        console.error(e);
-        toast.error("Failed to create link");
-      });
+    await toast.promise(
+      groupCreate
+        .mutateAsync({ name, email, group_name })
+        .then(async (res) => {
+          onModalClose();
+          if (res.group) {
+            toast.success(res.message);
+            await router.push(
+              `/group/link?id=${res.group.id}&pwd=${res.group.password}`,
+            );
+          } else {
+            toast.error(res.message);
+          }
+        })
+        .catch((e) => {
+          console.error(e);
+          toast.error("Failed to create link");
+        }),
+      {
+        pending: "Creating Group",
+      },
+    );
   }, [formGroupCreate]);
 
   // effects
