@@ -72,7 +72,6 @@ export function Button(props: ButtonProps) {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          overflow: "hidden",
         }}
       >
         <span
@@ -80,14 +79,25 @@ export function Button(props: ButtonProps) {
             fontWeight: "900",
             display: "flex",
             gap: 5,
+            textAlign: "center", // Centers text inside the span
+            wordBreak: "break-word", // Allows long words to break onto a new line
+            whiteSpace: "normal", // Ensures the text wraps normally
           }}
         >
           {props.text}
-          {props.isSeen === true ? (
+          {props.isSeen && (
             <CheckOutlined style={{ fontSize: 12, opacity: 0.7, color }} />
-          ) : null}
+          )}
         </span>
-        <span>{props.subText}</span>
+        <span
+          style={{
+            wordBreak: "break-word", // Ensures the subtext wraps as well
+            whiteSpace: "normal",
+            textAlign: "center", // Optional: center-align the subtext
+          }}
+        >
+          {props.subText}
+        </span>
       </div>
       {props.menuOptions ? (
         <Popover
