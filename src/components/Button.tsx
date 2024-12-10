@@ -3,6 +3,7 @@ import { stateColor } from "~/states";
 import AntButton from "antd/lib/button";
 import CheckOutlined from "@ant-design/icons/lib/icons/CheckOutlined";
 import MenuOutlined from "@ant-design/icons/lib/icons/MenuOutlined";
+import MailOutlined from "@ant-design/icons/lib/icons/MailOutlined";
 import Menu from "antd/lib/menu";
 import Popover from "antd/lib/popover";
 import { useState } from "react";
@@ -21,6 +22,8 @@ export interface ButtonProps {
     onClick: (args: { id: string }) => void;
   }[];
   isSeen?: boolean;
+  isEmailSent?: boolean;
+  prefix?: string;
 }
 
 export function Button(props: ButtonProps) {
@@ -59,11 +62,12 @@ export function Button(props: ButtonProps) {
         backgroundColor: props.isInverted ? "white" : "transparent",
         display: "flex",
         height: "fit-content",
-        minHeight: 40,
+        minHeight: 50,
         alignItems: "center",
         justifyContent: "center",
       }}
     >
+      {props.prefix != undefined && <div>{`${props.prefix}`}</div>}
       <div
         style={{
           width: "100%",
@@ -85,6 +89,9 @@ export function Button(props: ButtonProps) {
           }}
         >
           {props.text}
+          {props.isEmailSent && (
+            <MailOutlined style={{ fontSize: 12, opacity: 0.7, color }} />
+          )}
           {props.isSeen && (
             <CheckOutlined style={{ fontSize: 12, opacity: 0.7, color }} />
           )}

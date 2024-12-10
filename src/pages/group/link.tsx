@@ -42,19 +42,33 @@ export default function Link(props: { BASE_URL?: string }) {
   return (
     <LayoutPage pageTitle="Group - Link">
       <CheckAuth />
-      <div className="text-center text-white">
-        <p className="py-2.5  text-2xl text-white">
-          We created a new
-          <br />
-          Secret Santa link
-        </p>
-        <p className="py-2.5 font-light">
-          Please copy and keep this link to view the details later.
-          <br />
-          The link has also been sent to your email if you need to edit or
-          resend emails to santas later
-        </p>
-      </div>
+      {group.data?.is_matched ? (
+        <div className="text-center text-white">
+          <p className="py-2.5  text-2xl text-white">
+            Matched Group Management
+          </p>
+          <p className="py-2.5 font-light">
+            This group is Already matched.
+            <br />
+            Use this link and click the "Manage Group" to see if emails are
+            checked, resend emails, hints and more
+          </p>
+        </div>
+      ) : (
+        <div className="text-center text-white">
+          <p className="py-2.5  text-2xl text-white">
+            We created a new
+            <br />
+            Secret Santa link
+          </p>
+          <p className="py-2.5 font-light">
+            Please copy and keep this link to view the details later.
+            <br />
+            The link has also been sent to your email if you need to edit or
+            resend emails to santas later
+          </p>
+        </div>
+      )}
       <div className="h-50 w-50 flex flex-col items-center rounded-md border p-2">
         <Spin spinning={group.data ? false : true}>
           <p className="mb-0">Link:</p>
@@ -93,7 +107,9 @@ export default function Link(props: { BASE_URL?: string }) {
       <div className="m-2">
         <Button
           isDisabled={group.data ? false : true}
-          text="> 2.Continue Add People"
+          text={
+            !group.data?.is_matched ? "> 2.Continue Add People" : "Manage Group"
+          }
           isInverted
           onClick={async () => {
             await router.push({ pathname: "/group/match", query: { id, pwd } });

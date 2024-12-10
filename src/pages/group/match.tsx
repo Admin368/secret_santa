@@ -195,10 +195,16 @@ export default function Match() {
             </Form.Item>
             <Form.Item
               name="email"
-              label="email"
+              label="Email"
               rules={[{ required: true, type: "email" }]}
             >
               <Input />
+            </Form.Item>
+            <Form.Item name="phone_number" label="Phone_number">
+              <Input />
+            </Form.Item>
+            <Form.Item name="shipping_address" label="Shipping Address">
+              <Input.TextArea />
             </Form.Item>
             <Form.Item hidden>
               <AntButton htmlType="submit">Submit</AntButton>
@@ -217,7 +223,10 @@ export default function Match() {
         >
           <div className="text-center text-white">
             <p className="py-2.5  text-2xl text-white">
-              Add people to your Secret Santa group
+              Add people to your Secret Santa group{" "}
+              {group?.data?.members.length
+                ? `(${group?.data?.members.length} Members)`
+                : ""}
             </p>
             <p className="py-2.5 font-light">Randomly assign Secret Santas</p>
           </div>
@@ -227,7 +236,7 @@ export default function Match() {
               borderRadius: 5,
               flex: 1,
               alignItems: "center",
-              padding: 20,
+              padding: 5,
               gap: 5,
               display: "flex",
               flexDirection: "column",
@@ -245,6 +254,9 @@ export default function Match() {
                 maxHeight: "50vh",
                 overflow: "auto",
                 gap: 5,
+                padding: 5,
+                // borderTop: "1px solid white",
+                borderBottom: "1px solid white",
               }}
             >
               {group.data?.members && group.data?.members?.length > 0 ? (
@@ -253,6 +265,7 @@ export default function Match() {
                     <Button
                       id={member.id}
                       key={index}
+                      prefix={`#${index + 1}`}
                       text={member.name}
                       subText={member.email}
                       isInverted

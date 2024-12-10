@@ -221,6 +221,9 @@ export default function final() {
                       isInverted
                       width="100%"
                       isSeen={member.link_is_seen === true ? true : false}
+                      isEmailSent={
+                        member.match_email_is_sent === true ? true : false
+                      }
                       menuOptions={[
                         {
                           key: "email_send",

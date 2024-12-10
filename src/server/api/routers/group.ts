@@ -184,6 +184,8 @@ export const groupRouter = createTRPCRouter({
     .input(z.object({ group_id: z.string().min(1) }))
     .input(z.object({ name: z.string().min(1) }))
     .input(z.object({ email: z.string().email() }))
+    .input(z.object({ phone_number: z.string().nullable() }))
+    .input(z.object({ shipping_address: z.string().nullable() }))
     .input(z.object({ is_edit: z.boolean().optional() }))
     .input(z.object({ id: z.string().min(1).optional() }))
     .mutation(({ ctx, input }) => {
@@ -196,6 +198,8 @@ export const groupRouter = createTRPCRouter({
           data: {
             name: input.name,
             email: input.email,
+            phone_number: input.phone_number,
+            shipping_address: input.shipping_address,
           },
         });
       } else {
@@ -203,6 +207,8 @@ export const groupRouter = createTRPCRouter({
           data: {
             name: input.name,
             email: input.email,
+            phone_number: input.phone_number,
+            shipping_address: input.shipping_address,
             group_id: input.group_id,
           },
         });

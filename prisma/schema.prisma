@@ -97,6 +97,7 @@ model member {
   link                String?  @db.Text
   link_is_seen        Boolean? @default(false)
   shipping_address    String?  @db.Text
+  phone_number        String?
   match_email_is_sent Boolean  @default(false)
   group_id            String
   group               group    @relation(fields: [group_id], references: [id], onDelete: Cascade)
