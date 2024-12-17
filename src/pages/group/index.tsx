@@ -13,6 +13,7 @@ import { useCallback, useState } from "react";
 import Logo from "~/components/Logo";
 import { useRecoilValue } from "recoil";
 import { stateColor } from "~/states";
+import Link from "next/link";
 
 export default function Page() {
   // states
@@ -153,6 +154,13 @@ export default function Page() {
             onModalOpen();
           }}
         />
+        <Link href="/login">
+          <Button
+            isLoading={groupCreate.isLoading}
+            isDisabled={groupCreate.isLoading}
+            text="Manage Matched Group"
+          />
+        </Link>
       </div>
     </LayoutPage>
   );

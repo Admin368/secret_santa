@@ -9,7 +9,14 @@ import Form from "antd/lib/form";
 import { api } from "~/utils/api";
 import { toast } from "react-toastify";
 
-export default function CheckAuth() {
+export interface CheckAuthProps {
+  isIdEditble?: boolean;
+  isModal?: boolean;
+  onSuccess?: {
+    redirectUrl?: string;
+  };
+}
+export default function CheckAuth(props: CheckAuthProps) {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const id = router.query.id as string;
@@ -18,6 +25,7 @@ export default function CheckAuth() {
   const onLogin = useCallback(async () => {
     const query = form.getFieldsValue();
     await router.push({
+      pathname: props?.onSuccess?.redirectUrl ?? undefined,
       query: {
         id: query.id,
         pwd: query.pwd,
@@ -54,7 +62,24 @@ export default function CheckAuth() {
       ]);
     }
   }, [auth.data]);
-  return (
+  const MainComponent = () => (
+    <Card title={"Secret Santa - Password"} loading={auth.isFetching}>
+      <Form form={form} onFinish={onLogin}>
+        <Form.Item name={"id"} label="Id">
+          <Input disabled={props.isIdEditble ? !props.isIdEditble : true} />
+        </Form.Item>
+        <FormItem name={"pwd"} label="Password">
+          <Input />
+        </FormItem>
+        <FormItem>
+          <Button htmlType="submit" type="primary" size="large">
+            Login
+          </Button>
+        </FormItem>
+      </Form>
+    </Card>
+  );
+  return props.isModal !== true ? (
     <Modal
       open={isOpen}
       footer={null}
@@ -62,21 +87,9 @@ export default function CheckAuth() {
       closable={false}
       centered
     >
-      <Card title={"Secret Santa - Password"} loading={auth.isFetching}>
-        <Form form={form} onFinish={onLogin}>
-          <Form.Item name={"id"} label="Id">
-            <Input disabled />
-          </Form.Item>
-          <FormItem name={"pwd"} label="Password">
-            <Input />
-          </FormItem>
-          <FormItem>
-            <Button htmlType="submit" type="primary" size="large">
-              Login
-            </Button>
-          </FormItem>
-        </Form>
-      </Card>
+      <MainComponent />
     </Modal>
+  ) : (
+    <MainComponent />
   );
 }
