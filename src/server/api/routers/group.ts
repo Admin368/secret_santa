@@ -6,6 +6,7 @@ import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { shuffle1 } from "./util";
 import { env } from "~/env";
 import { type TypeSendEmail, emailSend } from "~/server/email";
+import PostHogClient from "~/utils/posthog";
 
 const BASE_URL = env.BASE_URL;
 
@@ -231,6 +232,20 @@ export const groupRouter = createTRPCRouter({
             </html>
           `,
         });
+
+        // Track group creation
+        const posthog = PostHogClient();
+        posthog.capture({
+          distinctId: group.id,
+          event: "group_created",
+          properties: {
+            group_id: group.id,
+            group_name: group.name,
+            creator_email: input.email,
+            creator_name: input.name,
+          },
+        });
+        await posthog.shutdown();
         return {
           isError: false,
           message: `Successfully created your Secret Santa ${group.name} Group`,
@@ -300,7 +315,22 @@ export const groupRouter = createTRPCRouter({
           id: input.id,
         },
       });
-      if (group?.password === input.pwd) isAuth = true;
+      if (group?.password === input.pwd) {
+        isAuth = true;
+
+        // Track admin link access
+        const posthog = PostHogClient();
+        posthog.capture({
+          distinctId: group.id,
+          event: "admin_link_accessed",
+          properties: {
+            group_id: group.id,
+            group_name: group.name,
+          },
+        });
+        await posthog.shutdown();
+      }
+
       return {
         isAuth,
       };
@@ -311,7 +341,7 @@ export const groupRouter = createTRPCRouter({
     .input(z.object({ email: z.string().email() }))
     .input(z.object({ is_edit: z.boolean().optional() }))
     .input(z.object({ id: z.string().min(1).optional() }))
-    .mutation(({ ctx, input }) => {
+    .mutation(async ({ ctx, input }) => {
       if (input.is_edit === true && input.id) {
         return ctx.db.member.update({
           where: {
@@ -324,13 +354,28 @@ export const groupRouter = createTRPCRouter({
           },
         });
       } else {
-        return ctx.db.member.create({
+        const member = await ctx.db.member.create({
           data: {
             name: input.name,
             email: input.email,
             group_id: input.group_id,
           },
         });
+
+        // Track member addition
+        const posthog = PostHogClient();
+        posthog.capture({
+          distinctId: input.group_id,
+          event: "member_added",
+          properties: {
+            group_id: input.group_id,
+            member_name: input.name,
+            member_email: input.email,
+          },
+        });
+        await posthog.shutdown();
+
+        return member;
       }
     }),
   member_remove: publicProcedure
@@ -459,6 +504,19 @@ export const groupRouter = createTRPCRouter({
             }),
           );
 
+          // Track santas matched
+          const posthog = PostHogClient();
+          posthog.capture({
+            distinctId: input.group_id,
+            event: "santas_matched",
+            properties: {
+              group_id: input.group_id,
+              group_name: group.name,
+              member_count: assignedMembers.length,
+              is_rematch: input.is_rematch ?? false,
+            },
+          });
+          await posthog.shutdown();
           if (failedEmails.length < 1) {
             return {
               isError: false,
@@ -568,6 +626,22 @@ export const groupRouter = createTRPCRouter({
             message: `Failed to send hints`,
           };
         }
+
+        // Track hints sent to santa
+        const posthog = PostHogClient();
+        posthog.capture({
+          distinctId: santa.group_id,
+          event: "hints_sent_to_santa",
+          properties: {
+            group_id: santa.group_id,
+            group_name: santa.group.name,
+            receiver_id: receiver.id,
+            santa_id: santa.id,
+            hint_count: hints.length,
+          },
+        });
+        await posthog.shutdown();
+
         return {
           isError: false,
           message: "A message has been sent to your Secret Santa",
@@ -652,6 +726,20 @@ export const groupRouter = createTRPCRouter({
         santa.group.members.map((member) => {
           members.push(member.name);
         });
+
+        // Track receiver revealed
+        const posthog = PostHogClient();
+        posthog.capture({
+          distinctId: santa.group_id,
+          event: "receiver_revealed",
+          properties: {
+            group_id: santa.group_id,
+            santa_id: santa.id,
+            receiver_id: receiver.id,
+          },
+        });
+        await posthog.shutdown();
+
         return {
           isError: false,
           message: "We found who you are matched with",
@@ -849,6 +937,22 @@ export const groupRouter = createTRPCRouter({
           )}`,
         };
       }
+
+      // Track bulk emails sent
+      const posthog = PostHogClient();
+      posthog.capture({
+        distinctId: input.id,
+        event: "bulk_emails_sent",
+        properties: {
+          group_id: input.id,
+          group_name: group.name,
+          action: input.action,
+          member_count: group.members.length,
+          failed_count: failedMembers.length,
+        },
+      });
+      await posthog.shutdown();
+
       return {
         isError: false,
         message: `Successfully sent emails to all members`,
