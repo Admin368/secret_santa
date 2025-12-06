@@ -6,6 +6,7 @@ import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { shuffle1 } from "./util";
 import { env } from "~/env";
 import { type TypeSendEmail, emailSend } from "~/server/email";
+import PostHogClient from "~/utils/posthog";
 
 const BASE_URL = env.BASE_URL;
 
@@ -21,17 +22,56 @@ export function returnFormatEmailRevealReceiver(args: {
   group: group;
 }): string {
   return `
-  <div width="100%">
-    <h1>Secret Santa - ${args.group.name} - Reveal</h1>
-    <p>
-    Greetings Santa <strong>${args.santa_name}</strong>,<br/>
-    Your friends have submitted you to be part of the ${args.group.name} secret santa for this year,<br/>
-    You have been secretely matched to gift one of your friends,<br/>
-    Click the link below to find out whose secret santa you will be!<br/>
-    <a href="${args.receiver_reveal_link}" target="_blank">${args.receiver_reveal_link}</a>
-    </p>
-    <iframe src="${args.base_url}/revelio/prelink?link=${args.receiver_reveal_link}" height="600px" width="600px"></iframe>
-  </div>
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+  <body style="margin: 0; padding: 0; font-family: 'Georgia', 'Times New Roman', serif; background: linear-gradient(135deg, #1a472a 0%, #2d5a3d 50%, #1a472a 100%);">
+    <div style="max-width: 600px; margin: 0 auto; background-color: #1a472a; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+      <!-- Header -->
+      <div style="background: linear-gradient(135deg, #c41e3a 0%, #165b33 100%); padding: 40px 20px; text-align: center; position: relative;">
+        <div style="font-size: 48px; margin-bottom: 10px;">🎄🎅🎄</div>
+        <h1 style="color: #ffffff; margin: 0; font-size: 32px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); letter-spacing: 2px;">Secret Santa Reveal!</h1>
+        <p style="color: #ffd700; margin: 10px 0 0 0; font-size: 18px; font-weight: bold;">${args.group.name}</p>
+      </div>
+      
+      <!-- Content -->
+      <div style="padding: 40px 30px; background: #ffffff;">
+        <div style="background: linear-gradient(to right, #fff5f5, #f0fff4); border-left: 4px solid #c41e3a; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+          <p style="color: #2d5a3d; font-size: 18px; line-height: 1.8; margin: 0;">
+            🎅 <strong style="color: #c41e3a; font-size: 20px;">Hallo Santa ${args.santa_name}!</strong><br/><br/>
+            
+            Your friends have chosen you to be part of the <strong style="color: #165b33;">${args.group.name}</strong> Secret Santa this year! 🎁<br/><br/>
+            
+            The automatic matching has been completed, and you've been secretly paired with one of your friends! 🎄<br/><br/>
+            
+            <span style="font-size: 16px; color: #c41e3a;">✨ Click the button below to discover who you'll be gifting this Christmas! ✨</span>
+          </p>
+        </div>
+        
+        <!-- Button -->
+        <div style="text-align: center; margin: 35px 0;">
+          <a href="${args.receiver_reveal_link}" target="_blank" style="display: inline-block; background: linear-gradient(135deg, #c41e3a 0%, #a01729 100%); color: #1a472a; text-decoration: none; padding: 18px 45px; border-radius: 50px; font-size: 18px; font-weight: bold; box-shadow: 0 6px 20px rgba(196, 30, 58, 0.4); transition: all 0.3s ease; border: 3px solid #ffd700;">
+            🎁 Reveal Your Match! 🎁
+          </a>
+        </div>
+        
+        <div style="text-align: center; margin-top: 20px;">
+          <p style="color: #666; font-size: 12px; margin: 5px 0;">Or copy this link:</p>
+          <p style="color: #165b33; font-size: 12px; word-break: break-all; margin: 5px 0;">${args.receiver_reveal_link}</p>
+        </div>
+      </div>
+            
+      <!-- Footer -->
+      <div style="background: linear-gradient(135deg, #165b33 0%, #1a472a 100%); padding: 25px; text-align: center;">
+        <p style="color: #ffd700; margin: 0; font-size: 14px;">🎄 Merry Christmas & Blessed Gifting! 🎄</p>
+        <p style="color: #ffffff; margin: 10px 0 0 0; font-size: 12px; opacity: 0.9;">May your heart be filled with joy and peace!</p>
+      </div>
+    </div>
+  </body>
+  </html>
 `;
 }
 
@@ -42,17 +82,56 @@ export function returnFormatEmailHintToSanta(args: {
 }): string {
   const hints_link = `${args.base_url}/room_of_requirements?id=${args.santa.id}`;
   return `
-  <div width="100%">
-    <h1>Secret Santa - ${args.group.name} - Hint</h1>
-    <p>
-    Greetings Santa <strong>${args.santa.name}</strong>,<br/>
-    Your receiver has sent you some hints of what they want for christmas,<br/>
-    Hopefully these help you in choosing your gift for them,<br/>
-    Click the link below to see the hints!<br/>
-    <a href="${hints_link}" target="_blank">${hints_link}</a>
-    </p>
-    <iframe src="/revelio/prelink?link=${hints_link}" height="600px" width="600px"></iframe>
-  </div>
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+  <body style="margin: 0; padding: 0; font-family: 'Georgia', 'Times New Roman', serif; background: linear-gradient(135deg, #1a472a 0%, #2d5a3d 50%, #1a472a 100%);">
+    <div style="max-width: 600px; margin: 0 auto; background-color: #1a472a; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+      <!-- Header -->
+      <div style="background: linear-gradient(135deg, #165b33 0%, #0f3d22 100%); padding: 40px 20px; text-align: center; position: relative;">
+        <div style="font-size: 48px; margin-bottom: 10px;">🎄🎅🎄</div>
+        <h1 style="color: #ffffff; margin: 0; font-size: 32px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); letter-spacing: 2px;">Secret Santa</h1>
+        <p style="color: #ffd700; margin: 10px 0 0 0; font-size: 18px; font-weight: bold;">${args.group.name} - Gift Hints Received</p>
+      </div>
+      
+      <!-- Content -->
+      <div style="padding: 40px 30px; background: #ffffff;">
+        <div style="background: linear-gradient(to right, #f0fff4, #fff5f5); border-left: 4px solid #165b33; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+          <p style="color: #2d5a3d; font-size: 18px; line-height: 1.8; margin: 0;">
+            🎅 <strong style="color: #165b33; font-size: 20px;">Great News, ${args.santa.name}!</strong><br/><br/>
+            
+            Your gift receiver has sent you some special hints about what they'd love for Christmas! 🎁✨<br/><br/>
+            
+            These clues should help guide you in choosing the perfect gift that will bring joy to their Christmas season! 🎄<br/><br/>
+            
+            <span style="font-size: 16px; color: #c41e3a;">💡 Click below to discover their wishlist hints! 💡</span>
+          </p>
+        </div>
+        
+        <!-- Button -->
+        <div style="text-align: center; margin: 35px 0;">
+          <a href="${hints_link}" target="_blank" style="display: inline-block; background: linear-gradient(135deg, #165b33 0%, #0f3d22 100%); color: #1a472a; text-decoration: none; padding: 18px 45px; border-radius: 50px; font-size: 18px; font-weight: bold; box-shadow: 0 6px 20px rgba(22, 91, 51, 0.4); transition: all 0.3s ease; border: 3px solid #ffd700;">
+            🎁 View Gift Hints! 🎁
+          </a>
+        </div>
+        
+        <div style="text-align: center; margin-top: 20px;">
+          <p style="color: #666; font-size: 12px; margin: 5px 0;">Or copy this link:</p>
+          <p style="color: #165b33; font-size: 12px; word-break: break-all; margin: 5px 0;">${hints_link}</p>
+        </div>
+      </div>
+            
+      <!-- Footer -->
+      <div style="background: linear-gradient(135deg, #165b33 0%, #1a472a 100%); padding: 25px; text-align: center;">
+        <p style="color: #ffd700; margin: 0; font-size: 14px;">🎄 Blessed Gift Hunting! 🎄</p>
+        <p style="color: #ffffff; margin: 10px 0 0 0; font-size: 12px; opacity: 0.9;">May you find the perfect gift to spread love and joy this Christmas!</p>
+      </div>
+    </div>
+  </body>
+  </html>
 `;
 }
 export const groupRouter = createTRPCRouter({
@@ -92,20 +171,81 @@ export const groupRouter = createTRPCRouter({
         }/group/link?id=${group.id}&pwd=${group.password}`;
         await emailSend({
           to: input.email,
-          subject: `Secret Santa - ${input.name} - Link`,
-          text: `
-            <div width="100%">
-            <h1>Secret Santa - ${group.name} - Link</h1>
-            <p>
-            Greetings <strong>Link Maker</strong>,<br/>
-            You have created a Secret Santa group for ${group.name},<br/>
-            Please Keep this link only to yourself,<br/>
-            Use it if you need to edit or resend emails to your Santas!<br/>
-            <a href="${link}" target="_blank">${link}</a>
-            </p>
-            </div>
+          subject: `Secret Santa - ${group.name} - Admin Link`,
+          text: `You have created a Secret Santa group for ${group.name}. Please keep this admin link private and use it to manage your group.`,
+          html: `
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            </head>
+            <body style="margin: 0; padding: 0; font-family: 'Georgia', 'Times New Roman', serif; background: linear-gradient(135deg, #1a472a 0%, #2d5a3d 50%, #1a472a 100%);">
+              <div style="max-width: 600px; margin: 0 auto; background-color: #1a472a; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+                <!-- Header -->
+                <div style="background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); padding: 40px 20px; text-align: center; position: relative;">
+                  <div style="font-size: 48px; margin-bottom: 10px;">🎄🎅🎄</div>
+                  <h1 style="color: #ffffff; margin: 0; font-size: 32px; text-shadow: 2px 2px 4px rgba(255,255,255,0.5); letter-spacing: 2px;">Secret Santa</h1>
+                  <p style="color: #ffd700; margin: 10px 0 0 0; font-size: 18px; font-weight: bold;">Group Created: ${group.name}</p>
+                </div>
+                
+                <!-- Content -->
+                <div style="padding: 40px 30px; background: #ffffff;">
+                  <div style="background: linear-gradient(to right, #fffbea, #fff5f5); border-left: 4px solid #ffd700; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+                    <p style="color: #2d5a3d; font-size: 18px; line-height: 1.8; margin: 0;">
+                      <strong style="color: #c41e3a; font-size: 20px;">Congratulations, ${input.name}!</strong><br/><br/>
+                      
+                      You have successfully created the <strong style="color: #165b33;">${group.name}</strong> Secret Santa group! 🎅🎄<br/><br/>
+                      
+                      As the <strong style="color: #ffd700; background: #1a472a; padding: 2px 8px; border-radius: 4px;">Link Maker</strong>, you have special admin powers! 🔑<br/><br/>
+                      
+                      <span style="font-size: 16px; color: #c41e3a; font-weight: bold;">⚠️ IMPORTANT: Keep this link private and secure! ⚠️</span><br/><br/>
+                      
+                      <span style="font-size: 15px; color: #2d5a3d;">Use this admin link to:</span><br/>
+                      • Add or remove participants 👥<br/>
+                      • Match Secret Santas 🎁<br/>
+                      • Resend emails to participants 📧<br/>
+                      • Manage your group settings ⚙️
+                    </p>
+                  </div>
+                  
+                  <!-- Button -->
+                  <div style="text-align: center; margin: 35px 0;">
+                    <a href="${link}" target="_blank" style="display: inline-block; background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); color: #1a472a; text-decoration: none; padding: 18px 45px; border-radius: 50px; font-size: 18px; font-weight: bold; box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4); transition: all 0.3s ease; border: 3px solid #c41e3a;">
+                      Access Admin Panel 
+                    </a>
+                  </div>
+                  
+                  <div style="text-align: center; margin-top: 20px; padding: 15px; background: #fff5f5; border-radius: 8px; border: 2px dashed #c41e3a;">
+                    <p style="color: #c41e3a; font-size: 13px; margin: 5px 0; font-weight: bold;">🔒 Keep this admin link secure!</p>
+                    <p style="color: #666; font-size: 11px; word-break: break-all; margin: 5px 0;">${link}</p>
+                  </div>
+                </div>
+                
+                <!-- Footer -->
+                <div style="background: linear-gradient(135deg, #165b33 0%, #1a472a 100%); padding: 25px; text-align: center;">
+                  <p style="color: #ffffff; margin: 0; font-size: 14px;">🎄 Let the Secret Santa Begin! 🎄</p>
+                  <p style="color: #ffffff; margin: 10px 0 0 0; font-size: 12px; opacity: 0.9;">Spread joy and holiday cheer with your friends!</p>
+                </div>
+              </div>
+            </body>
+            </html>
           `,
         });
+
+        // Track group creation
+        const posthog = PostHogClient();
+        posthog.capture({
+          distinctId: group.id,
+          event: "group_created",
+          properties: {
+            group_id: group.id,
+            group_name: group.name,
+            creator_email: input.email,
+            creator_name: input.name,
+          },
+        });
+        await posthog.shutdown();
         return {
           isError: false,
           message: `Successfully created your Secret Santa ${group.name} Group`,
@@ -175,7 +315,22 @@ export const groupRouter = createTRPCRouter({
           id: input.id,
         },
       });
-      if (group?.password === input.pwd) isAuth = true;
+      if (group?.password === input.pwd) {
+        isAuth = true;
+
+        // Track admin link access
+        const posthog = PostHogClient();
+        posthog.capture({
+          distinctId: group.id,
+          event: "admin_link_accessed",
+          properties: {
+            group_id: group.id,
+            group_name: group.name,
+          },
+        });
+        await posthog.shutdown();
+      }
+
       return {
         isAuth,
       };
@@ -186,7 +341,7 @@ export const groupRouter = createTRPCRouter({
     .input(z.object({ email: z.string().email() }))
     .input(z.object({ is_edit: z.boolean().optional() }))
     .input(z.object({ id: z.string().min(1).optional() }))
-    .mutation(({ ctx, input }) => {
+    .mutation(async ({ ctx, input }) => {
       if (input.is_edit === true && input.id) {
         return ctx.db.member.update({
           where: {
@@ -199,13 +354,28 @@ export const groupRouter = createTRPCRouter({
           },
         });
       } else {
-        return ctx.db.member.create({
+        const member = await ctx.db.member.create({
           data: {
             name: input.name,
             email: input.email,
             group_id: input.group_id,
           },
         });
+
+        // Track member addition
+        const posthog = PostHogClient();
+        posthog.capture({
+          distinctId: input.group_id,
+          event: "member_added",
+          properties: {
+            group_id: input.group_id,
+            member_name: input.name,
+            member_email: input.email,
+          },
+        });
+        await posthog.shutdown();
+
+        return member;
       }
     }),
   member_remove: publicProcedure
@@ -334,6 +504,19 @@ export const groupRouter = createTRPCRouter({
             }),
           );
 
+          // Track santas matched
+          const posthog = PostHogClient();
+          posthog.capture({
+            distinctId: input.group_id,
+            event: "santas_matched",
+            properties: {
+              group_id: input.group_id,
+              group_name: group.name,
+              member_count: assignedMembers.length,
+              is_rematch: input.is_rematch ?? false,
+            },
+          });
+          await posthog.shutdown();
           if (failedEmails.length < 1) {
             return {
               isError: false,
@@ -443,6 +626,22 @@ export const groupRouter = createTRPCRouter({
             message: `Failed to send hints`,
           };
         }
+
+        // Track hints sent to santa
+        const posthog = PostHogClient();
+        posthog.capture({
+          distinctId: santa.group_id,
+          event: "hints_sent_to_santa",
+          properties: {
+            group_id: santa.group_id,
+            group_name: santa.group.name,
+            receiver_id: receiver.id,
+            santa_id: santa.id,
+            hint_count: hints.length,
+          },
+        });
+        await posthog.shutdown();
+
         return {
           isError: false,
           message: "A message has been sent to your Secret Santa",
@@ -527,6 +726,20 @@ export const groupRouter = createTRPCRouter({
         santa.group.members.map((member) => {
           members.push(member.name);
         });
+
+        // Track receiver revealed
+        const posthog = PostHogClient();
+        posthog.capture({
+          distinctId: santa.group_id,
+          event: "receiver_revealed",
+          properties: {
+            group_id: santa.group_id,
+            santa_id: santa.id,
+            receiver_id: receiver.id,
+          },
+        });
+        await posthog.shutdown();
+
         return {
           isError: false,
           message: "We found who you are matched with",
@@ -724,6 +937,22 @@ export const groupRouter = createTRPCRouter({
           )}`,
         };
       }
+
+      // Track bulk emails sent
+      const posthog = PostHogClient();
+      posthog.capture({
+        distinctId: input.id,
+        event: "bulk_emails_sent",
+        properties: {
+          group_id: input.id,
+          group_name: group.name,
+          action: input.action,
+          member_count: group.members.length,
+          failed_count: failedMembers.length,
+        },
+      });
+      await posthog.shutdown();
+
       return {
         isError: false,
         message: `Successfully sent emails to all members`,

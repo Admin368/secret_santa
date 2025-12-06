@@ -1,10 +1,11 @@
-import Particles from "react-tsparticles";
+import Particles, { initParticlesEngine } from "@tsparticles/react";
 import {
   type RecursivePartial,
   type Engine,
   type IOptions,
-} from "tsparticles-engine";
-import { loadSnowPreset } from "tsparticles-preset-snow";
+} from "@tsparticles/engine";
+import { loadSnowPreset } from "@tsparticles/preset-snow";
+import { useEffect, useState } from "react";
 
 const options: RecursivePartial<IOptions> = {
   preset: "snow",
@@ -14,11 +15,9 @@ const options: RecursivePartial<IOptions> = {
   particles: {
     opacity: {
       value: 0.5,
-      random: true,
-      anim: {
+      animation: {
         enable: true,
         speed: 1,
-        opacity_min: 0.1,
         sync: false,
       },
     },
@@ -42,7 +41,7 @@ export const options2: RecursivePartial<IOptions> = {
         enable: true,
         mode: "bubble",
       },
-      resize: true,
+      // resize: true,
     },
     modes: {
       bubble: {
@@ -95,7 +94,7 @@ export const options2: RecursivePartial<IOptions> = {
     number: {
       density: {
         enable: true,
-        area: 800,
+        // area: 800,
       },
       value: 80,
     },
@@ -106,24 +105,25 @@ export const options2: RecursivePartial<IOptions> = {
       type: "circle",
     },
     size: {
-      random: true,
+      // random: true,
       value: 5,
     },
   },
 };
 export const Snow = () => {
-  const customInit = async (engine: Engine) => {
-    if (engine) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-      await loadSnowPreset(engine);
-    }
-  };
+  const [init, setInit] = useState(false);
 
-  return (
-    <Particles
-      options={options}
-      init={customInit}
-      style={{ position: "fixed" }}
-    />
-  );
+  useEffect(() => {
+    initParticlesEngine(async (engine: Engine) => {
+      await loadSnowPreset(engine);
+    }).then(() => {
+      setInit(true);
+    });
+  }, []);
+
+  if (!init) {
+    return null;
+  }
+
+  return <Particles options={options} style={{ position: "fixed" }} />;
 };

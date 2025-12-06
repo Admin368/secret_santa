@@ -24,7 +24,7 @@ export default function Match() {
   const membersMakeSantas = api.group.members_make_santas.useMutation();
 
   // form
-  const [formAddPerson] = Form.useForm<member & { is_edit?: boolean }>();
+  const [formAddPerson] = Form.useForm<member & { is_edit?: boolean, pwd?: string }>();
 
   // states
   const [modalIsOpen, setModalIsOpen] = useState(false);

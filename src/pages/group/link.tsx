@@ -2,7 +2,6 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Button } from "~/components/Button";
 import { api } from "~/utils/api";
-import { CopyToClipboard } from "react-copy-to-clipboard";
 import { toast } from "react-toastify";
 import { Spin } from "antd/lib";
 import CheckAuth from "~/components/CheckAuth";
@@ -14,11 +13,7 @@ interface linkType {
   password: string;
 }
 export async function getServerSideProps() {
-  return {
-    props: {
-      BASE_URL: env.BASE_URL,
-    },
-  };
+  return { props: { BASE_URL: env.BASE_URL } };
 }
 export default function Link(props: { BASE_URL?: string }) {
   const router = useRouter();
@@ -71,18 +66,19 @@ export default function Link(props: { BASE_URL?: string }) {
               justifyContent: "center",
             }}
           >
-            <CopyToClipboard
-              text={`Secret Santa Link (Only for link maker) Link: ${link?.link} Password: ${link?.password}`}
-              onCopy={() => {
-                toast.success("Link Copied to clipboard");
+            <Button
+              isDisabled={link ? false : true}
+              text="1.Copy Link"
+              isInverted
+              onClick={async () => {
+                if (link) {
+                  await navigator.clipboard.writeText(
+                    `Secret Santa Link (Only for link maker) Link: ${link.link} Password: ${link.password}`,
+                  );
+                  toast.success("Link Copied to clipboard");
+                }
               }}
-            >
-              <Button
-                isDisabled={link ? false : true}
-                text="1.Copy Link"
-                isInverted
-              />
-            </CopyToClipboard>
+            />
           </div>{" "}
         </Spin>
       </div>
