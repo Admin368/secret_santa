@@ -1,10 +1,11 @@
-import Particles from "@tsparticles/react";
+import Particles, { initParticlesEngine } from "@tsparticles/react";
 import {
   type RecursivePartial,
-  // type Engine,
+  type Engine,
   type IOptions,
 } from "@tsparticles/engine";
-// import { loadSnowPreset } from "@tsparticles/preset-snow";
+import { loadSnowPreset } from "@tsparticles/preset-snow";
+import { useEffect, useState } from "react";
 
 const options: RecursivePartial<IOptions> = {
   preset: "snow",
@@ -14,11 +15,9 @@ const options: RecursivePartial<IOptions> = {
   particles: {
     opacity: {
       value: 0.5,
-      // random: true,
       animation: {
         enable: true,
         speed: 1,
-        // opacity_min: 0.1,
         sync: false,
       },
     },
@@ -112,10 +111,19 @@ export const options2: RecursivePartial<IOptions> = {
   },
 };
 export const Snow = () => {
-  return (
-    <Particles
-      options={options}
-      style={{ position: "fixed" }}
-    />
-  );
+  const [init, setInit] = useState(false);
+
+  useEffect(() => {
+    initParticlesEngine(async (engine: Engine) => {
+      await loadSnowPreset(engine);
+    }).then(() => {
+      setInit(true);
+    });
+  }, []);
+
+  if (!init) {
+    return null;
+  }
+
+  return <Particles options={options} style={{ position: "fixed" }} />;
 };
