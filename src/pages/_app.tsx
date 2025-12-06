@@ -19,6 +19,9 @@ import {
 import { ToastContainer } from "react-toastify";
 import { Snow } from "~/components/Snow";
 import MusicButton from "~/components/Music";
+import posthog from "posthog-js";
+import { PostHogProvider } from "posthog-js/react";
+import { env } from "~/env";
 
 function ColorChanger() {
   const color = useRecoilValue(stateColor);
@@ -40,35 +43,49 @@ function ColorChanger() {
   }, [color, colors, colorIndex, colorsLength]);
   return null;
 }
+
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
   pageProps: { session, ...pageProps },
 }) => {
+  useEffect(() => {
+    env?.NEXT_PUBLIC_POSTHOG_KEY &&
+      posthog.init(env.NEXT_PUBLIC_POSTHOG_KEY, {
+        api_host: env.NEXT_PUBLIC_POSTHOG_HOST,
+        ui_host: "https://us.posthog.com",
+        defaults: "2025-05-24",
+        capture_exceptions: true,
+        debug: process.env.NODE_ENV === "development",
+      });
+  }, []);
+
   return (
-    <RecoilRoot>
-      <SessionProvider session={session}>
-        <ToastContainer
-          position="top-center"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="light"
-        />
-        <ColorChanger />
-        <ConfigProvider theme={theme}>
-          <MusicButton />
-          <Snow />
-          <Analytics />
-          <SpeedInsights />
-          <Component {...pageProps} />
-        </ConfigProvider>
-      </SessionProvider>
-    </RecoilRoot>
+    <PostHogProvider client={posthog}>
+      <RecoilRoot>
+        <SessionProvider session={session}>
+          <ToastContainer
+            position="top-center"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+          />
+          <ColorChanger />
+          <ConfigProvider theme={theme}>
+            <MusicButton />
+            <Snow />
+            <Analytics />
+            <SpeedInsights />
+            <Component {...pageProps} />
+          </ConfigProvider>
+        </SessionProvider>
+      </RecoilRoot>
+    </PostHogProvider>
   );
 };
 
