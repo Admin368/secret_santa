@@ -30,7 +30,7 @@
     "@vercel/analytics": "^1.1.1",
     "@vercel/speed-insights": "^1.0.1",
     "antd": "^5.12.1",
-    "next": "^14.2.10",
+    "next": "14.2.35",
     "next-auth": "^4.24.5",
     "nodemailer": "^7.0.11",
     "posthog-js": "^1.302.2",
