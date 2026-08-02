@@ -21,7 +21,7 @@ export default function LayoutPage(props: PropsLayoutPage) {
         alignItems: "center",
         justifyContent: "center",
         position: "relative",
-        overflow: "hidden",
+        overflow: "auto",
       }}
     >
       <Head>
