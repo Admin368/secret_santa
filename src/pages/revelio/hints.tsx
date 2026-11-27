@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { useCallback, useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { Button } from "~/components/Button";
+import { HintCard } from "~/components/HintCard";
 import LayoutPage from "~/layouts/LayoutPage";
 import { api } from "~/utils/api";
 
@@ -152,7 +153,12 @@ export default function Hints() {
               <Input disabled />
             </Form.Item>
             <Form.Item name="hint" label="Hint" rules={[{ required: true }]}>
-              <Input />
+              <Input.TextArea
+                autoSize={{ minRows: 3, maxRows: 8 }}
+                maxLength={300}
+                showCount
+                placeholder="e.g. I love scented candles, size M sweaters..."
+              />
             </Form.Item>
             <Form.Item hidden>
               <AntButton htmlType="submit">Submit</AntButton>
@@ -176,7 +182,9 @@ export default function Hints() {
           <div
             style={{
               width: "100%",
-              borderRadius: 5,
+              maxWidth: 760,
+              margin: "0 auto",
+              borderRadius: 12,
               flex: 1,
               alignItems: "center",
               padding: 20,
@@ -200,29 +208,14 @@ export default function Hints() {
               }}
             >
               {hints.length > 0 ? (
-                hints.map((hint, index) => {
-                  return (
-                    <Button
-                      id={hint}
-                      key={index}
-                      text={hint}
-                      isInverted
-                      width="100%"
-                      onClick={() => {
-                        // onHintAdd();
-                      }}
-                      menuOptions={[
-                        {
-                          key: "delete",
-                          label: "delete",
-                          onClick: () => {
-                            onHintRemove({ index });
-                          },
-                        },
-                      ]}
-                    />
-                  );
-                })
+                hints.map((hint, index) => (
+                  <HintCard
+                    key={index}
+                    hint={hint}
+                    index={index}
+                    onDelete={() => onHintRemove({ index })}
+                  />
+                ))
               ) : (
                 <span style={{ color: "white" }}>Please add some hints</span>
               )}

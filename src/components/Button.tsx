@@ -54,6 +54,7 @@ export function Button(props: ButtonProps) {
       style={{
         width: props.width ?? "fit-content",
         minWidth: "180px",
+        maxWidth: "100%",
         color: props.isInverted ? color : "white",
         backgroundColor: props.isInverted ? "white" : "transparent",
         display: "flex",
@@ -61,23 +62,32 @@ export function Button(props: ButtonProps) {
         minHeight: 40,
         alignItems: "center",
         justifyContent: "center",
+        gap: 8,
+        // AntD buttons default to nowrap, which clips long text (e.g. hints)
+        whiteSpace: "normal",
+        paddingTop: 6,
+        paddingBottom: 6,
       }}
     >
       <div
         style={{
-          width: "100%",
-          height: "100%",
+          flex: 1,
+          minWidth: 0,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          overflow: "hidden",
+          textAlign: "center",
+          overflowWrap: "anywhere",
         }}
       >
         <span
           style={{
             fontWeight: "900",
-            display: "flex",
+            display: "inline-flex",
+            alignItems: "center",
+            flexWrap: "wrap",
+            justifyContent: "center",
             gap: 5,
           }}
         >
@@ -86,7 +96,7 @@ export function Button(props: ButtonProps) {
             <CheckOutlined style={{ fontSize: 12, opacity: 0.7, color }} />
           ) : null}
         </span>
-        <span>{props.subText}</span>
+        {props.subText ? <span>{props.subText}</span> : null}
       </div>
       {props.menuOptions ? (
         <Popover
