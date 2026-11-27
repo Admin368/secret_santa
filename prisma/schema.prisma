@@ -91,7 +91,7 @@ model member {
   id           String   @id @default(cuid())
   name         String
   email        String
-  hints        String?
+  hints        String?  @db.Text
   hints_sent   Boolean?
   receiver_id  String?  @unique
   link         String?

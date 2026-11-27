@@ -1,6 +1,6 @@
 import LoadingOutlined from "@ant-design/icons/lib/icons/LoadingOutlined";
 import { useEffect } from "react";
-import { Button } from "~/components/Button";
+import { HintCard } from "~/components/HintCard";
 import LayoutPage from "~/layouts/LayoutPage";
 import { api } from "~/utils/api";
 
@@ -46,36 +46,32 @@ export default function RoomOfRequirements({ id }: { id: string }) {
                 gap: 5,
               }}
             >
-              <span style={{ fontSize: 20, fontWeight: 800 }}>
+              <span style={{ fontSize: 24, fontWeight: 800 }}>
                 Santa {receiver.data.santa_name}
               </span>
-              Here are the hints provided by your receiver
-              <br />
+              <span style={{ fontSize: 17 }}>
+                Here are the hints provided by your receiver
+              </span>
               <div
                 style={{
                   border: "1px solid white",
-                  borderRadius: 5,
+                  borderRadius: 12,
                   width: "100%",
+                  maxWidth: 760,
+                  marginTop: 10,
                   display: "flex",
                   flexDirection: "column",
-                  gap: 10,
+                  gap: 12,
                   alignItems: "center",
                   justifyContent: "center",
-                  padding: 10,
+                  padding: 12,
                 }}
               >
                 {receiver.data?.hints.length < 1
                   ? "Your receiver hasn't provided hints"
-                  : receiver.data?.hints.map((hint, index) => {
-                      return (
-                        <Button
-                          text={hint}
-                          key={index}
-                          isInverted
-                          width="100%"
-                        />
-                      );
-                    })}
+                  : receiver.data?.hints.map((hint, index) => (
+                      <HintCard hint={hint} index={index} key={index} />
+                    ))}
               </div>
             </div>
           ) : receiver.isLoading ? (
